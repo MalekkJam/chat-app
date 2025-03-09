@@ -8,7 +8,7 @@ const app = new Application();
 const port = Deno.args[0] ? Number(Deno.args[0]) : 3000;
 
 
-// JWT secret
+// JWT secrets
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
 // Create JWT
@@ -19,6 +19,13 @@ async function createJWT(payload: JWTPayload): Promise<string> {
     .setExpirationTime("1h")
     .sign(secret);
 }
+
+// For testing purposes
+router.get("/", (ctx) => {
+  ctx.response.status = 200;
+  ctx.response.body = "Hello world!";
+});
+
 
 router.post("/login", async (ctx) => {
   const body = await ctx.request.body({ type: "json" }).value;
@@ -50,9 +57,6 @@ router.post("/login", async (ctx) => {
     ctx.response.body = { message: "Unauthorized" };
   }
 });
-
-
-
 
 app.use(oakCors({
   origin: "http://localhost:5173", 
