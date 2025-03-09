@@ -88,6 +88,5 @@ export default {
           alert("Please fill in all fields");
         }
   }
-}
-}
+}};
 </script>

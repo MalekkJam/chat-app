@@ -1,14 +1,14 @@
 <script setup>
-import Login from './components/Login.vue';
+import { ref } from "vue"; // Import ref for reactivity
 
-const components = {
-  Login, 
-};
+const message = ref("Invalid email address"); // Reactive variable
 </script>
 
 <template>
-  <Login></Login>
+  <!-- <Login></Login> -->
+  <Register></Register>
 </template>
 
 <style scoped>
+
 </style>
