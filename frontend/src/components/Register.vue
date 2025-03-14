@@ -78,6 +78,8 @@ export default {
                 .then((response) => {
                     if (response.status == 200) {
                         console.log("Welcome");
+                    }else if (response.status == 400) {
+                        console.log(response.body);
                     }
                 })
                 .catch((error) => {

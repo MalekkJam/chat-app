@@ -1,11 +1,21 @@
 {
   "version": "4",
   "specifiers": {
+    "npm:@types/node@*": "22.12.0",
     "npm:jose@5.9.6": "5.9.6"
   },
   "npm": {
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
     "jose@5.9.6": {
       "integrity": "sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ=="
+    },
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
     }
   },
   "redirects": {
@@ -168,7 +178,15 @@
     "https://deno.land/x/oak@v12.6.1/structured_clone.ts": "c3888b14d1eec558345bfbf13d0993d59bd45aaa8588444e35dd558c3a921cd8",
     "https://deno.land/x/oak@v12.6.1/testing.ts": "37d684d57bb8e5150fb5eb2677e66b04dcb422709cf2c5a74c1df94d52aa02e2",
     "https://deno.land/x/oak@v12.6.1/util.ts": "0a3fdffb114859c2de84e1783efa3a544af4d2af8c6f08e0d25655de9d3e69bb",
-    "https://deno.land/x/path_to_regexp@v6.2.1/index.ts": "894060567837bae8fc9c5cbd4d0a05e9024672083d5883b525c031eea940e556"
+    "https://deno.land/x/path_to_regexp@v6.2.1/index.ts": "894060567837bae8fc9c5cbd4d0a05e9024672083d5883b525c031eea940e556",
+    "https://deno.land/x/sqlite@v3.1.1/build/sqlite.js": "1ed72c8bbe9311ca4db51eaf53f69e4e8e6a98c781aed4b78e098fa7d99b7870",
+    "https://deno.land/x/sqlite@v3.1.1/build/vfs.js": "6f3baec899ee07b7b5622a3e7bde7d72ba6724beb533747d787af339de5c50f1",
+    "https://deno.land/x/sqlite@v3.1.1/mod.ts": "a0d0417f38ede10e11d3845019f497a0ff64a5bb0c1592ea72f27d1949052dc1",
+    "https://deno.land/x/sqlite@v3.1.1/src/constants.ts": "b967237b460fafa03ca03aeddb33953bed41c7cbdc309a934e2329a5c84079ac",
+    "https://deno.land/x/sqlite@v3.1.1/src/db.ts": "92769c331d1eea21d530ee1e31bdcbb82437c95f05147ae27ffaf16345842f0e",
+    "https://deno.land/x/sqlite@v3.1.1/src/error.ts": "6b0e5e8e5b60c928ab5b125a0801074445fbe40b20de87c95ca15f4b88592faf",
+    "https://deno.land/x/sqlite@v3.1.1/src/query.ts": "ad41895ceb1585a4f67b4cf836a3106d9be8957bf00ec48a056638026286f9b0",
+    "https://deno.land/x/sqlite@v3.1.1/src/wasm.ts": "e79d0baa6e42423257fb3c7cc98091c54399254867e0f34a09b5bdef37bd9487"
   },
   "workspace": {
     "dependencies": [
