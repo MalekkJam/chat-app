@@ -62,7 +62,7 @@ export default {
       if (this.email && this.password) {
 
         fetch(url + "/login", {
-          method: "POST",
+          method: "GET",
           mode: "cors",
           headers: {
             "Content-Type": "Application/json",
@@ -71,7 +71,6 @@ export default {
           body: JSON.stringify({ email: this.email, password: this.password }),
         })
         .then((response) => {
-          console.log(this.email,this.password);
           if (response.status == 200) {
             response.json().then((data) => {
               alert("Welcome " + data.email);

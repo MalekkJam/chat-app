@@ -1,1 +1,2 @@
-SELECT COUNT(*) FROM User;
+-- delete from user
+select * from user
