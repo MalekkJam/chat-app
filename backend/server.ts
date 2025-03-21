@@ -6,7 +6,6 @@ const router = new Router();
 const app = new Application();
 const port = Deno.args[0] ? Number(Deno.args[0]) : 3000;
 
-
 router.post("/registration", registration);
 router.post("/login",login) ; 
 

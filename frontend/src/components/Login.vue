@@ -62,7 +62,7 @@ export default {
       if (this.email && this.password) {
 
         fetch(url + "/login", {
-          method: "GET",
+          method: "POST",
           mode: "cors",
           headers: {
             "Content-Type": "Application/json",
@@ -72,13 +72,12 @@ export default {
         })
         .then((response) => {
           if (response.status == 200) {
-            response.json().then((data) => {
-              alert("Welcome " + data.email);
-              this.email = "";
-              this.password = "";
+            document.cookie.split('; ').forEach(cookie => {
+              const [name, value] = cookie.split('=');
+              if (name === 'auth_token') {
+                console.log('Cookie Value:', value);
+              }
             });
-          } else {
-            alert("Unauthorized");
           }
         })
         .catch((error) => console.error("Fetch error:", error));

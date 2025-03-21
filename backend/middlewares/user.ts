@@ -62,16 +62,18 @@ export const registration = async (ctx : Context) => {
 // Login Handler 
 export const login = async(ctx : Context) => {
   try {
+    
     const {email , password} = await ctx.request.body().value ; 
 
     const hashed_password = await find_user_by_email(email) ; 
+    
 
     if (!hashed_password) {
       ctx.response.status = 400 ; 
       ctx.response.body = { message: "User not found" };
       return;
     }
-    
+
     const compare_passwords = bcrypt.compareSync(password,hashed_password) ;
 
     if (!compare_passwords) {
@@ -85,7 +87,8 @@ export const login = async(ctx : Context) => {
     // Generating the token
     const payload = { username, role: "user" };
     const token = await createJWT(payload);
-
+    
+    
     // Generating the cookie 
     ctx.cookies.set("auth_token", token, {
       httpOnly: true,
@@ -93,9 +96,12 @@ export const login = async(ctx : Context) => {
       maxAge: 60 * 60,
       secure: false,
     });
+
+    ctx.response.status = 200 ;     
     
-    
-  }catch (error) {
-    throw error ; 
-  }
+  } catch (error) {
+    console.error("Login error:", error);  // Log dans la console Deno
+    ctx.response.status = 500;
+    ctx.response.body = { message: "Internal server error" };
+}
 }

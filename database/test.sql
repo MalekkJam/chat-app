@@ -1,2 +1,2 @@
--- delete from user
-select * from user
+-- delete from user ; 
+select * from User
