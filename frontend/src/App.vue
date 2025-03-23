@@ -1,12 +1,10 @@
 <script setup>
-
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <Login></Login>
-  <!-- <Register></Register> -->
+  <RouterView />
 </template>
 
 <style scoped>
-
 </style>

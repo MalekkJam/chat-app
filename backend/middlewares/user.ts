@@ -88,7 +88,6 @@ export const login = async(ctx : Context) => {
     const payload = { username, role: "user" };
     const token = await createJWT(payload);
     
-    
     // Generating the cookie 
     ctx.cookies.set("auth_token", token, {
       httpOnly: true,
@@ -97,7 +96,8 @@ export const login = async(ctx : Context) => {
       secure: false,
     });
 
-    ctx.response.status = 200 ;     
+    ctx.response.status = 200;   
+    ctx.response.body = { "username": username };   
     
   } catch (error) {
     console.error("Login error:", error);  // Log dans la console Deno
