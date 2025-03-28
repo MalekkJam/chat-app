@@ -24,7 +24,7 @@
           class="w-full px-4 py-2 mt-1 text-sm border rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-gray-50 border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
           placeholder="••••••••" 
           required>
-        <ErrorMessage v-if="showMessage" :message="errorMessage" class="mt-2 text-red-500" />
+        <ErrorMessage v-if="showError" :message="errorMessage" class="mt-2 text-red-500" />
       </div>
 
       <button 
@@ -76,7 +76,8 @@ export default {
         .then(async (response) => {
           if (response.status === 200) {
             const data = await response.json();
-            alert("Welcome " + data.username);
+            console.log("Response data:", data);
+            this.$router.push("/");
             this.showError = false; 
           } else if (response.status === 400) {
             this.showError = true;
@@ -96,8 +97,5 @@ export default {
           alert("Please fill in all fields");
         }
   },
-  redirectToRegister() {
-    this.$router.push("/register") ; 
-  }
 }};
 </script>

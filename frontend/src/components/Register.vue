@@ -58,7 +58,7 @@
 
       <p class="text-sm text-center text-gray-600 dark:text-gray-400">
         Already have an account? 
-        <router-link to="/"class="font-medium text-blue-600 hover:underline dark:text-blue-400">Login here</router-link>
+        <router-link to="/login"class="font-medium text-blue-600 hover:underline dark:text-blue-400">Login here</router-link>
       </p>
     </div>
   </div>

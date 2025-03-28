@@ -105,3 +105,9 @@ export const login = async(ctx : Context) => {
     ctx.response.body = { message: "Internal server error" };
 }
 }
+
+// Logout handler 
+export const logout = async (ctx : Context) => {
+  const result = await ctx.cookies.delete("auth_token");
+  result ? ctx.response.status = 200 : ctx.response.status = 400 ;  
+}
