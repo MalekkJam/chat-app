@@ -111,3 +111,9 @@ export const logout = async (ctx : Context) => {
   const result = await ctx.cookies.delete("auth_token");
   result ? ctx.response.status = 200 : ctx.response.status = 400 ;  
 }
+
+// Verify token presence 
+export const verifyToken = async (ctx: Context) => {
+  const token = await ctx.cookies.get("auth_token");
+  ctx.response.body = { valid: !!token };
+}; 
