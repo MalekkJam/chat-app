@@ -75,12 +75,27 @@ export default {
         })
         .then(async (response) => {
           if (response.status === 200) {
-            this.$router.push("/");
+            try {
+              // Establish WebSocket connection
+              const ws = new WebSocket("ws://localhost:3000/ws");
+              ws.onopen = () => {
+              console.log("WebSocket connection established");
+              this.$router.push("/");
+              };
+              ws.onerror = (error) => {
+              console.error("WebSocket error:", error);
+              this.showError = true;
+              this.errorMessage = "Failed to establish WebSocket connection.";
+              };
+            } catch (error) {
+              console.error("WebSocket initialization error:", error);
+              this.showError = true;
+              this.errorMessage = "An error occurred while initializing WebSocket.";
+            }
           } else {
-            response.json().then(data => {
-                          this.showErrorMessage = true;
-                          this.errorMessage = data.message;
-                        });
+            const data = await response.json();
+            this.showError = true;
+            this.errorMessage = data.message || "Login failed.";
           }
         })
         .catch((error) => {
