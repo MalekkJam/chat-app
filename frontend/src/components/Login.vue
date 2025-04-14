@@ -75,16 +75,12 @@ export default {
         })
         .then(async (response) => {
           if (response.status === 200) {
-            const data = await response.json();
-            console.log("Response data:", data);
             this.$router.push("/");
-            this.showError = false; 
-          } else if (response.status === 400) {
-            this.showError = true;
-            this.errorMessage = "Invalid credentials. Please try again."; 
           } else {
-            this.showError = true;
-            this.errorMessage = "Something went wrong. Please try again later.";
+            response.json().then(data => {
+                          this.showErrorMessage = true;
+                          this.errorMessage = data.message;
+                        });
           }
         })
         .catch((error) => {

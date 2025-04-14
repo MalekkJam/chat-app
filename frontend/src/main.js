@@ -4,6 +4,7 @@ import App from "./App.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import ErrorMessage from "./components/ErrorMessage.vue";
+import SuccessMessage from "./components/SuccessMessage.vue";
 import Sidebar from "./components/Sidebar.vue";
 import Navabar from "./components/Navbar.vue";
 import Home from "./components/Home.vue";
@@ -18,6 +19,7 @@ app.component("ErrorMessage", ErrorMessage);
 app.component("Sidebar", Sidebar);
 app.component("Navbar", Navabar);
 app.component("Home", Home);
+app.component("SuccessMessage",SuccessMessage) ; 
 
 app.use(router);
 app.mount("#app");

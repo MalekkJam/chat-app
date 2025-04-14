@@ -46,7 +46,8 @@
           class="w-full px-4 py-2 mt-1 text-sm border rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-gray-50 border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
           placeholder="••••••••" 
           required>
-        <ErrorMessage v-if="showMessage" :message="errorMessage" class="mt-2 text-red-500" />
+        <ErrorMessage v-if="showErrorMessage" :message="errorMessage" class="mt-2 text-red-500" />
+        <SuccessMessage v-if="showSuccessMessage" :message="successMessage" class="mt-2 text-green-500"/>
       </div>
 
       <button 
@@ -68,10 +69,12 @@
 
 <script>
 import ErrorMessage from './ErrorMessage.vue';
+import SuccessMessage from './SuccessMessage.vue';
 
 export default {
     components : {
       ErrorMessage,
+      SuccessMessage
     },
     data() {
         return {
@@ -79,8 +82,10 @@ export default {
             email: '',
             password: '',
             confirm_password: '', 
-            showMessage : false, 
+            showErrorMessage : false, 
             errorMessage : "" ,
+            showSuccessMessage : false,
+            successMessage : ""
         }
     },
 
@@ -90,7 +95,7 @@ export default {
             const url = "http://localhost:3000";
 
             if (this.password !== this.confirm_password) {
-                this.showMessage = true ; 
+                this.showErrorMessage = true ; 
                 this.errorMessage = "Passwords do not match" ; 
             }
 
@@ -105,15 +110,24 @@ export default {
                 body: JSON.stringify({ username : this.username, email : this.email, password : this.password}),
             })
                 .then((response) => {
-                    if (response.status == 200) {
-                        console.log("Welcome");
+                    if (response.ok) {
                         this.email = "";
                         this.username = "" ; 
                         this.password = "" ; 
                         this.confirm_password = "" ; 
-                        this.$router.push("/login");
-                    }else if (response.status == 400) {
-                        console.log(response.body);
+                        if (this.showErrorMessage) {
+                            this.showErrorMessage = false ;
+                        }
+                        this.showSuccessMessage = true ; 
+                        this.successMessage = "New account added"
+                        setTimeout(() => {
+                          this.$router.push("/login");
+                        }, 3000);
+                    }else {
+                        response.json().then(data => {
+                          this.showErrorMessage = true;
+                          this.errorMessage = data.message;
+                        });
                     }
                 })
                 .catch((error) => {
