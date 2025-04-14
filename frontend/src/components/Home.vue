@@ -1,10 +1,16 @@
 <template>
-    <Navbar></Navbar>
-    <Sidebar></Sidebar>
-</template>
+
+      <!-- Navbar at the top -->
+      <!-- <Navbar></Navbar>
+        <Sidebar></Sidebar> -->
+        <Conversation class="flex-1 bg-blue-100 p-4 overflow-y-auto ml-5"></Conversation>
+
+  </template>
 <script>
 import Navbar from "@/components/Navbar.vue" 
 import Sidebar from "@/components/Sidebar.vue" 
+import Main from "@/components/Main.vue"
+import Conversation from "@/components/Conversation.vue"
 
 export default {
     mounted() {
