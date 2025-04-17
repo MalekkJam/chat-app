@@ -1,6 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import { registration , login, logout, verifyToken, getConversations} from "./middlewares/user.ts";
+import { connectionUpgrade } from "./middlewares/websocket.ts";
 
 const router = new Router();
 const app = new Application();
@@ -17,37 +18,7 @@ router.post("/verifyToken",verifyToken) ;
 router.get("/getConversations",getConversations) ; 
     
 // WebSocket endpoint
-router.get("/ws", (ctx) => {
-  if (ctx.isUpgradable) {
-    const socket = ctx.upgrade();
-    clients.add(socket);
-
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
-    };
-
-    socket.onmessage = (event) => {
-      console.log("Message received:", event.data);
-
-      // Broadcast the message to all connected clients
-      for (const client of clients) {
-        if (client !== socket && client.readyState === WebSocket.OPEN) {
-          client.send(`Broadcast: ${event.data}`);
-        }
-      }
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-      clients.delete(socket);
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      clients.delete(socket);
-    };
-  }
-});
+router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));
 
 
 app.use(

@@ -41,4 +41,20 @@
 
 
 </template>
-<script></script>
+<script>
+import { onMounted } from 'vue';
+import { initWebSocket, sendMessage } from '@/services/websocket';
+
+export default {
+   setup() {
+      onMounted(async () => {
+         await initWebSocket();
+         sendMessage("Hola todos from the front");
+      });
+   }
+};
+
+
+
+
+</script>

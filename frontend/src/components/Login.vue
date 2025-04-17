@@ -105,7 +105,8 @@ export default {
         })
         }
         else {
-          alert("Please fill in all fields");
+          this.showError = true;
+          this.errorMessage = "Please fill in all fields.";
         }
   },
 }};
