@@ -35,12 +35,17 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
     };
 
     socket.onmessage = (event) => {
-      console.log(`Message from ${username}:`, event.data);
-      broadcastMessage(clients, JSON.stringify({ from: username, message: event.data }));
 
-      const { message } = JSON.parse(event.data.toString());
-      const authSocket = socket as AuthenticatedWebSocket;
-      _addMessage(authSocket,message,1)
+      const { type,action } = JSON.parse(event.data.toString()); 
+        if (type == "message") {
+          const authSocket = socket as AuthenticatedWebSocket;
+          _addMessage(authSocket,action,1)
+        }
+        else if (type == "request") {
+          const authSocket = socket as AuthenticatedWebSocket;
+          // We have to extract the schema etc.. 
+        }
+      
 
     };
 

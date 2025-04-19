@@ -22,6 +22,7 @@
 </template>
 <script>
 import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { initWebSocket, sendMessage } from '@/services/websocket';
 
 export default {
@@ -31,27 +32,30 @@ export default {
       }
    }, 
    setup() {
+
+      const router = useRoute() ; 
+      const loadMessages =  ()=> {
+         const request = {  type : "request"  , action: "getMessages/"+router.params.conversation };
+         sendMessage(JSON.stringify(request));
+      } ; 
+   
+   
       onMounted(async () => {
          await initWebSocket();
+         await loadMessages() ; 
       });
    },
    methods : { 
       _sendMessage() {
          if (this.message.trim() !== "") {
-            const token = document.cookie
-              .split('; ')
-              .find(row => row.startsWith('auth_token='))
-              ?.split('=')[1];
-            console.log(token)
-            // Ensure the message is not empty
-            sendMessage(this.message,token); // Send the message as a string
-            console.log("Message sent:", this.message); // Log the message
+            const request = {  type : "message"  , action: this.message };
+            sendMessage(JSON.stringify(request));
             this.message = ""; // Clear the input field
          } else {
             console.log("Cannot send an empty message");
             // add error handling for the empty message
          }
-      }
+      },
    }
 };
 

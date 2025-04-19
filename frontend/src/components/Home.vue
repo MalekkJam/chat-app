@@ -12,7 +12,7 @@
 
       <!-- Main content on the right -->
       <section class="pt-20 pl-70 rounded-tl-lg bg-white shadow">
-        <Conversation class="w-full"></Conversation>
+        <router-view></router-view>
       </section>
     </div>
   </div>
@@ -21,7 +21,6 @@
 <script>
 import Navbar from "@/components/Navbar.vue" 
 import Sidebar from "@/components/Sidebar.vue" 
-import Conversation from "@/components/Conversation.vue"
 
 export default {
     mounted() {

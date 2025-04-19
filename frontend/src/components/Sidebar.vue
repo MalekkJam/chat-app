@@ -1,7 +1,7 @@
 <template>
   <nav class="bg-gray-800 h-full w-64 pt-16 fixed">
     <ul>
-      <li class="text-white p-4" v-for="conversation in conversations" :key="conversation">
+      <li @click="changeConversation(conversation)" class="text-white p-4" v-for="conversation in conversations" :key="conversation">
         {{ conversation }}
       </li>
     </ul>
@@ -30,6 +30,11 @@
             // Error handling has to be added 
         })
 
+      },
+      methods : {
+         changeConversation(conversation) {
+            this.$router.push("/conversation/"+conversation) 
+         }
       }
    }
 
