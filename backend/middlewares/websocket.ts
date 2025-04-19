@@ -12,12 +12,7 @@ export const connectionUpgrade = (clients : Set<WebSocket>,ctx : Context) => {
       socket.onmessage = (event) => {
         console.log("Message received:", event.data);
   
-        // Broadcast the message to all connected clients
-        for (const client of clients) {
-          if (client !== socket && client.readyState === WebSocket.OPEN) {
-            client.send(`Broadcast: ${event.data}`);
-          }
-        }
+        broadcastMessage(clients,"Hola from the back")
       };
   
       socket.onclose = () => {
@@ -31,3 +26,12 @@ export const connectionUpgrade = (clients : Set<WebSocket>,ctx : Context) => {
       };
     }
   }
+
+
+  export const broadcastMessage = (clients: Set<WebSocket>, message: string) => {
+    for (const client of clients) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    }
+  };

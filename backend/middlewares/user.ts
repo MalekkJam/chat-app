@@ -85,7 +85,7 @@ export const login = async(ctx : Context) => {
     const username : string = await find_username_by_email(email) ; 
 
     // Generating the token
-    const payload = { username, role: "user" };
+    const payload = { username : username, role: "user" };
     const token = await createJWT(payload);
     
     // Generating the cookie 
@@ -97,7 +97,6 @@ export const login = async(ctx : Context) => {
     });
 
     ctx.response.status = 200;   
-    ctx.response.body = { "username": username };   
     
   } catch (error) {
     console.error("Login error:", error);  // Log dans la console Deno
@@ -140,6 +139,29 @@ export const getConversations = async (ctx: Context) => {
     const result = await _getConversations(username) ; 
     ctx.response.status = 200 ; 
     ctx.response.body = result ; 
+
+
+  } catch (_error) {
+      ctx.response.status = 500;
+      ctx.response.body = { message: "Internal server error" };    
+  }
+} 
+
+export const getUsername = async (ctx: Context) => {
+  try {
+    const token = await ctx.cookies.get("auth_token");
+    
+    if (!token) {
+      ctx.response.status = 401;
+      ctx.response.body = { message: "Unauthorized" };
+      return
+    }
+
+    const {payload} = await jwtVerify(token,secret) ; 
+    const username = payload.username as string
+
+    ctx.response.status = 302 ; 
+    ctx.response.body = { username };
 
 
   } catch (_error) {

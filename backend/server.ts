@@ -1,6 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
-import { registration , login, logout, verifyToken, getConversations} from "./middlewares/user.ts";
+import { registration , login, logout, verifyToken, getConversations, getUsername} from "./middlewares/user.ts";
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 
 const router = new Router();
@@ -16,6 +16,7 @@ router.post("/login",login) ;
 router.post("/logout",logout) ; 
 router.post("/verifyToken",verifyToken) ; 
 router.get("/getConversations",getConversations) ; 
+router.get("/getUsername",getUsername) ; 
     
 // WebSocket endpoint
 router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));
