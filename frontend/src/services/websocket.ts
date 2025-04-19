@@ -30,9 +30,9 @@ export const initWebSocket = async (): Promise<WebSocket> => {
   return socket;
 };
 
-export const sendMessage = (message: string): void => {
+export const sendMessage = (message: string, token : string): void => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify(message));
+      socket.send(JSON.stringify({ message, token }));
     } else {
       console.error('WebSocket is not open');
     }

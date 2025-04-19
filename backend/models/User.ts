@@ -42,7 +42,7 @@ export const find_user_by_email = async (email: string): Promise<string | null> 
     }
 };
 
-const find_userId_by_username = async (username: string): Promise<string> => {
+export const find_userId_by_username = async (username: string): Promise<string> => {
     const query = "SELECT user_id FROM User WHERE username = ?";
 
     try {

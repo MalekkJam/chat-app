@@ -1,32 +1,65 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { getUsername } from "./user.ts";
+import { _addMessage } from "./message.ts";
+import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 
-export const connectionUpgrade = (clients : Set<WebSocket>,ctx : Context) => {
-    if (ctx.isUpgradable) {
-      const socket = ctx.upgrade();
-      clients.add(socket);
-  
-      socket.onopen = () => {
-        console.log("WebSocket connection established");
-      };
-  
-      socket.onmessage = (event) => {
-        console.log("Message received:", event.data);
-  
-        broadcastMessage(clients,"Hola from the back")
-      };
-  
-      socket.onclose = () => {
-        console.log("WebSocket connection closed");
-        clients.delete(socket);
-      };
-  
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        clients.delete(socket);
-      };
+export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
+  if (!ctx.isUpgradable) return;
+
+  try {
+    // 1. Call your getUsername function
+    await getUsername(ctx); // This sets ctx.response
+    
+    // 2. Check if response is valid
+    if (ctx.response.status !== 302 || !ctx.response.body) {
+      ctx.response.status = 401;
+      ctx.response.body = 'Unauthorized';
+      return;
     }
-  }
 
+    // 3. Extract username
+    const { username } = ctx.response.body as { username: string };
+
+    // 4. Proceed with WebSocket upgrade
+    const socket = ctx.upgrade();
+    clients.add(socket);
+
+    // 5. Attach username to socket
+    (socket as AuthenticatedWebSocket).username = username;
+
+
+    // 6. Setup event handlers
+    socket.onopen = () => {
+      console.log(`${username} connected`);
+      socket.send(JSON.stringify({ status: 'connected' }));
+    };
+
+    socket.onmessage = (event) => {
+      console.log(`Message from ${username}:`, event.data);
+      broadcastMessage(clients, JSON.stringify({ from: username, message: event.data }));
+
+      const { message } = JSON.parse(event.data.toString());
+      const authSocket = socket as AuthenticatedWebSocket;
+      _addMessage(authSocket,message,1)
+
+    };
+
+    socket.onclose = () => {
+      clients.delete(socket);
+      console.log(`${username} disconnected`);
+    };
+
+    socket.onerror = (error) => {
+      clients.delete(socket);
+      console.error(`${username} error:`, error);
+    };
+
+  } catch (error) {
+    ctx.response.status = 500;
+    ctx.response.body = 'Internal Server Error';
+    console.error('WebSocket upgrade failed:', error);
+  }
+};
 
   export const broadcastMessage = (clients: Set<WebSocket>, message: string) => {
     for (const client of clients) {
