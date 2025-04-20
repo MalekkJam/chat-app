@@ -2,6 +2,7 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getUsername } from "./user.ts";
 import { _addMessage } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
+import { getConversations } from "./chat.ts";
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -34,18 +35,58 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
       socket.send(JSON.stringify({ status: 'connected' }));
     };
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
 
       const { type,action } = JSON.parse(event.data.toString()); 
+      const authSocket = socket as AuthenticatedWebSocket;
         if (type == "message") {
-          const authSocket = socket as AuthenticatedWebSocket;
           _addMessage(authSocket,action,1)
         }
-        else if (type == "request") {
-          const authSocket = socket as AuthenticatedWebSocket;
-          // We have to extract the schema etc.. 
-        }
+        else if (type === "request") {
+          let actionType: string;
+          
+          if (action.includes("/")) {
+              actionType = action.substring(0, action.indexOf("/"));
+          } else {
+              actionType = action;
+          }
       
+          switch (actionType) {
+              case "getConversations": {
+                  const conversations = await getConversations(username);
+                  socket.send(JSON.stringify({
+                      type: "response",
+                      action: "getConversations",
+                      data: conversations,
+                  }));
+                  break;
+              }
+      
+              case "getUsername": {
+                  socket.send(JSON.stringify({
+                      type: "response",
+                      action: "getUsername",
+                      data: username
+                  }));
+                  break;  // Don't forget break statement
+              }
+      
+              case "loadMessages": {
+                  // Implement your message loading logic here
+                  break;
+              }
+      
+              default: {
+                  console.warn(`Unknown action type: ${actionType}`);
+                  socket.send(JSON.stringify({
+                      type: "error",
+                      message: `Unknown action: ${actionType}`
+                  }));
+                  break;
+              }
+          }
+      }
+             
 
     };
 

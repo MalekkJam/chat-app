@@ -21,29 +21,29 @@
 
 </template>
 <script>
-import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { initWebSocket, sendMessage } from '@/services/websocket';
+import { initWebSocket, sendMessage  } from '@/services/websocket';
 
 export default {
    data()  {
       return {
          message : "",
+         messages : []
       }
    }, 
-   setup() {
-
-      const router = useRoute() ; 
-      const loadMessages =  ()=> {
-         const request = {  type : "request"  , action: "getMessages/"+router.params.conversation };
-         sendMessage(JSON.stringify(request));
-      } ; 
-   
-   
-      onMounted(async () => {
-         await initWebSocket();
-         await loadMessages() ; 
-      });
+   async mounted()  {
+      try {
+         const socket = await initWebSocket() ; 
+         socket.onmessage = (event) => {
+            const response = JSON.parse(event.data) 
+            if (response.type === "request" && request.action === "loadMessages") {
+               this.messages = request.data
+               console.log(this.messages)
+            }
+         }
+      }
+      catch(error) {
+         console.error("Error initiliazing the websocket")
+      }
    },
    methods : { 
       _sendMessage() {
@@ -51,9 +51,6 @@ export default {
             const request = {  type : "message"  , action: this.message };
             sendMessage(JSON.stringify(request));
             this.message = ""; // Clear the input field
-         } else {
-            console.log("Cannot send an empty message");
-            // add error handling for the empty message
          }
       },
    }

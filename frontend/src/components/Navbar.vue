@@ -42,26 +42,33 @@
 </nav>
 </template>
 <script>
+
+import { initWebSocket , sendMessage } from '@/services/websocket';
 export default {
+
   data() {
     return {
       isMenuOpen: false,
       username: "",
     };
   },
-  mounted() {
-    const url = "http://localhost:3000";
-    fetch(url + "/getUsername", {
-      method: "GET",
-      mode: "cors",
-      credentials: "include",
-    }).then((Response) => {
-      if (Response.status == 302) {
-        Response.json().then((data) => {
-          this.username = data.username;
-        });
+  async created() {
+    try {
+      const socket = await initWebSocket() ; 
+      const request = {  type : "request"  , action: "getUsername" };
+      sendMessage(JSON.stringify(request));
+      socket.onmessage = (event) => {
+        const response = JSON.parse(event.data) 
+        
+        if (response.type === "response" && response.action === "getUsername") {
+          this.username = response.data
+          console.log(this.username)
+          }
       }
-    });
+      }
+      catch(error) {
+        console.error("Error initialising socket"); 
+      }
   },
   methods: {
     toggleMenu() {

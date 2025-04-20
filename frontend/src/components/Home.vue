@@ -21,21 +21,18 @@
 <script>
 import Navbar from "@/components/Navbar.vue" 
 import Sidebar from "@/components/Sidebar.vue" 
+import { initWebSocket } from "@/services/websocket";
+
 
 export default {
-    mounted() {
-        const url = "http://localhost:3000";
-        fetch(url + "/verifyToken", {
-            method : "POST", 
-            mode: "cors",
-            headers: {
-            "Content-Type": "Application/json",
-          },
-          credentials: "include",
-        }).then(async (Response) => {
-            if (Response.status != 200)
-                this.$router.push("/login") ; 
-        })
+  async mounted() {
+    try {
+      // Check if the websocket exists if not will create a new one else it will redirect 
+      await initWebSocket() ; 
+    } catch (error) {
+      console.error("Error initializing WebSocket:", error);
+      this.$router.push("/login"); // Redirect to login page
+    }
     }
 }
 </script>

@@ -1,40 +1,52 @@
 let socket: WebSocket | null = null;
+let connectionPromise: Promise<WebSocket> | null = null; // Shared promise
 
 export const initWebSocket = async (): Promise<WebSocket> => {
-  if (!socket) {
-    socket = await new Promise<WebSocket>((resolve, reject) => {
-      const ws = new WebSocket('ws://localhost:3000/ws');
-      ws.onopen = () => {
-        console.log('WebSocket connection established');
-        resolve(ws);
-      };
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        reject(error);
-      };
-    });
-    
-    socket.onmessage = (event) => {
-      console.log('Message from server:', event.data);
-    };
+  // Return existing connection if OPEN
+  if (socket?.readyState === WebSocket.OPEN) {
+    return socket;
+  }
 
-    socket.onclose = () => {
-      console.log('WebSocket connection closed');
-      socket = null; // Reset the socket
+  // Return pending promise if connecting
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
+  // Start new connection
+  connectionPromise = new Promise((resolve, reject) => {
+    socket = new WebSocket("ws://localhost:3000/ws");
+
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+      resolve(socket!);
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("Connection failed:", error);
+      socket = null;
+      connectionPromise = null;
+      reject(error);
     };
-  }
-  return socket;
+
+    socket.onclose = () => {
+      console.log("WebSocket closed");
+      socket = null;
+      connectionPromise = null;
+    };
+  });
+
+  return connectionPromise;
 };
 
-export const sendMessage = (message): void => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(message)
-    } else {
-      console.error('WebSocket is not open');
-    }
-  };
+// Now works reliably across components
+export const isWebSocketConnected = (): boolean => {
+  return socket?.readyState === WebSocket.OPEN;
+};
 
+export const sendMessage = (message: string): void => {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(message);
+  } else {
+    console.error("WebSocket is not open");
+  }
+};

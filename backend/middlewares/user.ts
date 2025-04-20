@@ -1,5 +1,5 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, _getConversations} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 
@@ -122,30 +122,6 @@ export const verifyToken = async (ctx: Context) => {
   else {ctx.response.status = 200  
   }
 }; 
-
-export const getConversations = async (ctx: Context) => {
-  try {
-    const token = await ctx.cookies.get("auth_token");
-    
-    if (!token) {
-      ctx.response.status = 401;
-      ctx.response.body = { message: "Unauthorized" };
-      return
-    }
-
-    const {payload} = await jwtVerify(token,secret) ; 
-    const username = payload.username as string
-
-    const result = await _getConversations(username) ; 
-    ctx.response.status = 200 ; 
-    ctx.response.body = result ; 
-
-
-  } catch (_error) {
-      ctx.response.status = 500;
-      ctx.response.body = { message: "Internal server error" };    
-  }
-} 
 
 export const getUsername = async (ctx: Context) => {
   try {

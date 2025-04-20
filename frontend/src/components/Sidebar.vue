@@ -8,31 +8,38 @@
   </nav>
 </template>
 <script>
+
+import { sendMessage, initWebSocket } from '@/services/websocket';
+
    export default {
       data() {
          return {
             conversations: []
          };
       },
-      mounted() {
-         const url = "http://localhost:3000" ; 
-         fetch(url + "/getConversations", {
-            method : "GET", 
-            mode: "cors",
-            headers: {
-            "Content-Type": "Application/json",
-          },
-          credentials: "include",
-        }).then(async (Response) => {
-            if (Response.ok) {
-               this.conversations = await Response.json() ; 
+      async mounted() {
+         try {
+            const socket = await initWebSocket() ; 
+            const request = {  type : "request"  , action: "getConversations" };
+            sendMessage(JSON.stringify(request));
+            
+            socket.onmessage = (event) => {
+               const response = JSON.parse(event.data) 
+
+               if (response.type === "response" && response.action === "getConversations") {
+                  this.conversations = response.data
+               }
             }
-            // Error handling has to be added 
-        })
+         }
+         catch(error) {
+            console.error("Error initialising socket"); 
+         }
 
       },
       methods : {
          changeConversation(conversation) {
+            const request = {  type : "request"  , action: "loadMessages/"+conversation };
+            sendMessage(JSON.stringify(request));
             this.$router.push("/conversation/"+conversation) 
          }
       }
