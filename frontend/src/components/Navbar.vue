@@ -42,51 +42,48 @@
 </nav>
 </template>
 <script>
-
-import { initWebSocket , sendMessage } from '@/services/websocket';
+import { initWebSocket , sendMessage } from '@/services/websocket.service';
 export default {
-
   data() {
     return {
       isMenuOpen: false,
       username: "",
     };
   },
-  async created() {
-    try {
-      const socket = await initWebSocket() ; 
-      const request = {  type : "request"  , action: "getUsername" };
-      sendMessage(JSON.stringify(request));
-      socket.onmessage = (event) => {
-        const response = JSON.parse(event.data) 
-        
-        if (response.type === "response" && response.action === "getUsername") {
-          this.username = response.data
-          console.log(this.username)
-          }
-      }
-      }
-      catch(error) {
-        console.error("Error initialising socket"); 
-      }
+  async mounted() {
+    const url = "http://localhost:3000"
+
+    fetch(url+"/getUsername",{
+            method : "GET",
+            mode : "cors",
+            headers : {
+            "Content-Type": "Application/json",
+          },credentials : "include"})
+          .then(async(response) => {
+            if (response.status == 302) {
+              const data = await response.json()
+              this.username = data.username
+            }
+          })
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
     logout() {
-      const url = "http://localhost:3000";
-
-      fetch(url + "/logout", {
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
-      }).then((Response) => {
-        if (Response.status == 200) {
-          this.$router.push("/login");
-        }
-      });
-    },
+        const url = "http://localhost:3000"
+        fetch (url +"/logout", {
+          method : "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "Application/json",
+          },
+          credentials: "include",
+        }).then((response) => {
+          if (response.status == 200) 
+            this.$router.push("/login")
+        })
+      }
   },
 };
 </script>

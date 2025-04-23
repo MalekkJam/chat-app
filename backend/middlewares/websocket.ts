@@ -3,6 +3,8 @@ import { getUsername } from "./user.ts";
 import { _addMessage } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 import { getConversations } from "./chat.ts";
+import { getMessages } from "../models/Message.ts";
+import { find_username_by_id } from "../models/User.ts";
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -40,50 +42,47 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
       const { type,action } = JSON.parse(event.data.toString()); 
       const authSocket = socket as AuthenticatedWebSocket;
         if (type == "message") {
-          _addMessage(authSocket,action,1)
+          const {conversation} = JSON.parse(event.data.toString())
+          _addMessage(authSocket,action,conversation)
+          broadcastMessage(clients,action)
         }
         else if (type === "request") {
-          let actionType: string;
-          
-          if (action.includes("/")) {
-              actionType = action.substring(0, action.indexOf("/"));
-          } else {
-              actionType = action;
-          }
-      
-          switch (actionType) {
-              case "getConversations": {
-                  const conversations = await getConversations(username);
-                  socket.send(JSON.stringify({
-                      type: "response",
-                      action: "getConversations",
-                      data: conversations,
-                  }));
-                  break;
-              }
-      
-              case "getUsername": {
-                  socket.send(JSON.stringify({
-                      type: "response",
-                      action: "getUsername",
-                      data: username
-                  }));
-                  break;  // Don't forget break statement
-              }
-      
+              
+          switch (action) {
+     
               case "loadMessages": {
-                  // Implement your message loading logic here
+                  const {conversation} = JSON.parse(event.data.toString())
+                  const messages = await getMessages(conversation) 
+                  // join the two tables to get a table containing usernames and messages
+                  const fullMessages = await Promise.all(
+                    messages.map(async(message) => {
+                      const username = await find_username_by_id(message.sender_id)
+                      return {
+                        username : username[0].username , 
+                        content : message.content,
+                        date : message.timestamp
+                      }
+                    })
+                  );
+                  socket.send(JSON.stringify({
+                    type : "response" , 
+                    action : "loadMessages", 
+                    conversation : conversation, 
+                    data : fullMessages
+                  }))
                   break;
               }
+
       
               default: {
-                  console.warn(`Unknown action type: ${actionType}`);
+                  console.warn(`Unknown action type: ${action}`);
                   socket.send(JSON.stringify({
                       type: "error",
-                      message: `Unknown action: ${actionType}`
+                      message: `Unknown action: ${action}`
                   }));
                   break;
               }
+
           }
       }
              

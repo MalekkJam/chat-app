@@ -1,1 +1,1 @@
-select * from message 
+INSERT INTO ChatParticipant(chat_name,

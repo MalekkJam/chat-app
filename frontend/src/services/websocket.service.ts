@@ -2,17 +2,17 @@ let socket: WebSocket | null = null;
 let connectionPromise: Promise<WebSocket> | null = null; // Shared promise
 
 export const initWebSocket = async (): Promise<WebSocket> => {
-  // Return existing connection if OPEN
   if (socket?.readyState === WebSocket.OPEN) {
+    console.log("Reusing existing WebSocket connection");
     return socket;
   }
 
-  // Return pending promise if connecting
   if (connectionPromise) {
+    console.log("Waiting for existing WebSocket connection to establish");
     return connectionPromise;
   }
 
-  // Start new connection
+  console.log("Creating a new WebSocket connection");
   connectionPromise = new Promise((resolve, reject) => {
     socket = new WebSocket("ws://localhost:3000/ws");
 
@@ -22,25 +22,21 @@ export const initWebSocket = async (): Promise<WebSocket> => {
     };
 
     socket.onerror = (error) => {
-      console.error("Connection failed:", error);
+      console.error("WebSocket connection failed:", error);
       socket = null;
       connectionPromise = null;
-      reject(error);
+      reject(new Error("WebSocket connection failed")); // Reject the promise
     };
 
     socket.onclose = () => {
-      console.log("WebSocket closed");
+      console.log("WebSocket connection closed");
       socket = null;
       connectionPromise = null;
     };
+
   });
 
   return connectionPromise;
-};
-
-// Now works reliably across components
-export const isWebSocketConnected = (): boolean => {
-  return socket?.readyState === WebSocket.OPEN;
 };
 
 export const sendMessage = (message: string): void => {
@@ -49,4 +45,8 @@ export const sendMessage = (message: string): void => {
   } else {
     console.error("WebSocket is not open");
   }
+};
+
+export const isWebSocketConnected = (): boolean => {
+  return socket?.readyState === WebSocket.OPEN;
 };

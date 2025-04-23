@@ -11,7 +11,7 @@
       <Sidebar class="w-64 flex-shrink-0"></Sidebar>
 
       <!-- Main content on the right -->
-      <section class="pt-20 pl-70 rounded-tl-lg bg-white shadow">
+      <section class="flox-grow pt-20 pl-70 rounded-tl-lg bg-white shadow">
         <router-view></router-view>
       </section>
     </div>
@@ -21,7 +21,7 @@
 <script>
 import Navbar from "@/components/Navbar.vue" 
 import Sidebar from "@/components/Sidebar.vue" 
-import { initWebSocket } from "@/services/websocket";
+import { initWebSocket } from "@/services/websocket.service";
 
 
 export default {

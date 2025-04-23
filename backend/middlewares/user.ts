@@ -2,6 +2,7 @@ import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 import { User, registerUser , find_username_by_email, find_user_by_email} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
+import { get } from "node:https";
 
 // JWT Secret
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
@@ -31,6 +32,8 @@ export const registration = async (ctx : Context) => {
       ctx.response.body = { message: "Username can only contain letters and numbers" };
       return;
     }
+
+    // Add a unicity username and email tests 
 
     // Validate Password Length
     if (password.length < 4 || password.length > 20) {

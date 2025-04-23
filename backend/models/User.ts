@@ -53,6 +53,18 @@ export const find_userId_by_username = async (username: string): Promise<string>
     }
 };
 
+export const find_username_by_id = async (id : number) => {
+    const query = "SELECT username FROM User WHERE user_id = ? "
+
+    try {
+        const result = await db.prepare(query).all(id) as {username : string}[]
+        return result 
+    }
+    catch (error) {
+        throw error 
+    }
+}
+
 
 
 

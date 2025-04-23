@@ -13,3 +13,14 @@ export const _getConversations = async (username : string) : Promise<string[]> =
     throw error ; 
     }
 }   
+
+export const get_chatID_by_chatName = async (chat_name : string ) =>  {
+    const query = "SELECT chat_id FROM Chat WHERE chat_name = ?"
+
+    try {
+        const result = await db.prepare(query).all(chat_name) as { chat_id: string }[];    
+        return result[0].chat_id;
+    }catch(error) {
+        throw error 
+    }
+}
