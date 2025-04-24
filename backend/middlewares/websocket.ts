@@ -2,7 +2,6 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getUsername } from "./user.ts";
 import { _addMessage } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
-import { getConversations } from "./chat.ts";
 import { getMessages } from "../models/Message.ts";
 import { find_username_by_id } from "../models/User.ts";
 
@@ -25,10 +24,10 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
 
     // 4. Proceed with WebSocket upgrade
     const socket = ctx.upgrade();
-    clients.add(socket);
-
+    
     // 5. Attach username to socket
     (socket as AuthenticatedWebSocket).username = username;
+    clients.add(socket);
 
 
     // 6. Setup event handlers
@@ -44,7 +43,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
         if (type == "message") {
           const {conversation} = JSON.parse(event.data.toString())
           _addMessage(authSocket,action,conversation)
-          broadcastMessage(clients,action)
+          broadcastMessage(clients,action,conversation)
         }
         else if (type === "request") {
               
@@ -106,10 +105,18 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
   }
 };
 
-  export const broadcastMessage = (clients: Set<WebSocket>, message: string) => {
-    for (const client of clients) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
+export const broadcastMessage = (clients : Set<WebSocket>, message : string , conversation : string) => {
+  const broadcastData  =JSON.stringify({
+    type  : "broadcast",
+    action : "newMessages",
+    conversation : conversation,
+    data : message
+  }); 
+
+  for (const client of clients) {
+    if(client.readyState === WebSocket.OPEN) {
+      client.send(broadcastData)
     }
-  };
+  }
+}
+

@@ -19,8 +19,9 @@
              {{ message.date }}
            </span>
          </div>
+    
          <div
-           class="flex flex-col leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700"
+           class="flex flex-col leading-1.5 w-4/5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700"
          >
            <p class="text-sm font-normal text-gray-900 dark:text-white">
              {{ message.content }}
@@ -89,6 +90,7 @@ export default {
 
          socket.onmessage = (event) => {
             const response = JSON.parse(event.data);
+            console.log(response)
             if (
                response.type === "response" &&
                response.action === "loadMessages" &&
@@ -96,6 +98,19 @@ export default {
             ) {
                this.messages = response.data;
             }
+            if (
+              response.type === "broadcast" && 
+              response.action === "newMessages" && 
+              response.conversation === this.activeConversation 
+            ){
+              console.log("mesage rja3")
+              this.messages.push({
+                username : "You",
+                content : response.data,
+                date : new Date().toISOString()
+              })
+            }
+
          };
          } catch (error) {
          console.error("Error initializing conversation:", error);
