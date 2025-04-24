@@ -1,4 +1,6 @@
+import { userInfo } from "node:os";
 import db from "../config/database.ts";
+import test from "node:test";
 
 export interface User {
     username : string;
@@ -65,8 +67,47 @@ export const find_username_by_id = async (id : number) => {
     }
 }
 
+export const find_info_by_username = async (username : string) => {
+    const query = "SELECT username, email FROM User WHERE username = ?"
 
+    try {
+        const result = db.prepare(query).all(username) as {username : string} [] 
+        return result 
+    }
+    catch (error) {
+        throw error 
+    }
+}
 
+export const update_User_Data = async(username : string, new_username : string) => {
+    // Test username and returns true if it exists already 
+    const test_username = await testDataBeforeUpdate("username",new_username) ;  
+    const query = "UPDATE User SET username = ? WHERE username = ?";
+
+    try{
+        if (test_username) {
+            return 
+        }else {
+            const result = db.prepare(query).all(new_username,username)
+            return result 
+        }
+    }catch (error) {
+        throw error 
+    }
+}
+
+const testDataBeforeUpdate = async (category : string, data: string): Promise<boolean> => {
+    const query = `SELECT * FROM User WHERE ${category} = ?`;
+
+    try {
+        const result = await db.prepare(query).all(data);
+        console.log(result)
+        return result.length > 0; // Return true if username exists, false otherwise
+    } catch (error) {
+        console.error("Error checking username:", error);
+        throw error;
+    }
+};
 
 
 

@@ -28,7 +28,7 @@
                         <button href="#" class="p-2 hover:bg-gray-800 text-white text-sm no-underline hover:no-underline block">
                           <img src="../assets/images/profile-picture.png" class="w-4 h-4 inline-block filter invert">
                           Profile</button>
-                        <button href="#" class="p-2 hover:bg-gray-800 text-white text-sm no-underline hover:no-underline block">
+                        <button @click="goToSettings()" class="p-2 hover:bg-gray-800 text-white text-sm no-underline hover:no-underline block">
                           <img src="../assets/images/settings.png" class="w-4 h-4 inline-block filter invert">
                           Settings</button>
                         <button @click="logout()" class="p-2 hover:bg-gray-800 text-white text-sm no-underline hover:no-underline block">
@@ -42,7 +42,6 @@
 </nav>
 </template>
 <script>
-import { initWebSocket , sendMessage } from '@/services/websocket.service';
 export default {
   data() {
     return {
@@ -83,7 +82,10 @@ export default {
           if (response.status == 200) 
             this.$router.push("/login")
         })
-      }
+    }, 
+    goToSettings() {
+      this.$router.push("/settings")
+    }
   },
 };
 </script>

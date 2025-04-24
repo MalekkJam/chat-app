@@ -80,7 +80,7 @@ export default {
          try {
           const socket = await initWebSocket();
           this.activeConversation = this.$route.params.conversation;
-
+          
           const request = {
               type: "request",
               action: "loadMessages",
@@ -90,7 +90,6 @@ export default {
 
          socket.onmessage = (event) => {
             const response = JSON.parse(event.data);
-            console.log(response)
             if (
                response.type === "response" &&
                response.action === "loadMessages" &&
@@ -103,7 +102,6 @@ export default {
               response.action === "newMessages" && 
               response.conversation === this.activeConversation 
             ){
-              console.log("mesage rja3")
               this.messages.push({
                 username : "You",
                 content : response.data,

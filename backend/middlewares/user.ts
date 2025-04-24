@@ -1,8 +1,7 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
-import { get } from "node:https";
 
 // JWT Secret
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
@@ -136,7 +135,12 @@ export const getUsername = async (ctx: Context) => {
       return
     }
 
-    const {payload} = await jwtVerify(token,secret) ; 
+    if (!token) {
+      ctx.response.status = 401;
+      ctx.response.body = { message: "Unauthorized" };
+      return;
+    }
+    const { payload } = await jwtVerify(token, secret);
     const username = payload.username as string
 
     ctx.response.status = 302 ; 
@@ -148,3 +152,71 @@ export const getUsername = async (ctx: Context) => {
       ctx.response.body = { message: "Internal server error" };    
   }
 } 
+
+export const getUserInfo = async(ctx : Context) => {
+  try {
+    const token = await ctx.cookies.get("auth_token")
+
+    if (!token) {
+      ctx.response.status = 401
+      ctx.response.body = { message : "Unauthorized"}
+      return
+    }
+
+    const {payload} = await jwtVerify(token,secret) 
+    const username = payload.username as string ; 
+
+    const result = await find_info_by_username(username) ; 
+    ctx.response.status = 200
+    ctx.response.body = result[0] 
+
+  }catch (error) {
+    ctx.response.status = 500
+    ctx.response.body = { message : "Internal server error"}
+  }
+} 
+
+export const updateUserData = async (ctx : Context) => {
+  try {
+    const token = await ctx.cookies.get("auth_token")
+
+    if (!token) {
+      ctx.response.status = 401
+      ctx.response.body = {message : "Unathorized"}
+      return 
+    }
+
+    const {payload} = await jwtVerify(token,secret)
+    const username = payload.username as string
+
+    const { new_username } = await ctx.request.body().value
+    const result = await update_User_Data(username,new_username)
+
+    if (result == undefined) {
+      ctx.response.status = 401 
+      ctx.response.body = {message : "Username already exists, try new one !"}
+      return
+    }
+
+    // Delete the old token to maintain connection 
+    await ctx.cookies.delete("auth_token");
+    // Generating the new token
+    const _payload = { username : new_username, role: "user" };
+    const new_token = await createJWT(_payload);
+    // Generating the cookie 
+    ctx.cookies.set("auth_token", new_token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60,
+      secure: false,
+    });
+
+    ctx.response.status = 200 
+    ctx.response.body = {message : "Your information has been succesfully saved !"}
+
+  }
+  catch (error) {
+    ctx.response.status = 500 
+    ctx.response.body = {message : "Internal server error"}
+  }
+}
