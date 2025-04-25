@@ -1,1 +1,2 @@
-INSERT INTO ChatParticipant(chat_name,
+ALTER TABLE User
+ADD COLUMN account_state BOOLEAN DEFAULT TRUE;

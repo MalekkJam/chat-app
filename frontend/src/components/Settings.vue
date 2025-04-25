@@ -81,18 +81,27 @@
   
           <!-- Danger Zone -->
           <div class="p-6 border border-red-200 rounded-lg bg-red-50 dark:bg-gray-700 dark:border-red-800">
-            <h3 class="text-lg font-medium text-red-800 dark:text-red-400 mb-4">Danger Zone</h3>
-            <p class="text-sm text-red-600 dark:text-red-300 mb-6">Deleting your account is permanent and cannot be undone.</p>  <!-- Increased mb-4 to mb-6 -->
-            <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700">
-              Delete Account
-            </button>
-          </div>
+    <h3 class="text-lg font-medium text-red-800 dark:text-red-400 mb-4">Danger Zone</h3>
+    <p class="text-sm text-red-600 dark:text-red-300 mb-6">Deleting your account is permanent and cannot be undone.</p>
+    <button 
+      @click="showDeleteConfirm = true"
+      class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700">
+      Delete Account
+    </button>
+  </div>
+
+  <!-- Add this at the bottom of your template -->
+  <Popup v-if="showDeleteConfirm"
+    @confirm="deleteAccount"
+    @cancel="showDeleteConfirm = false"></Popup>
         </div>
       </div>
     </section>
   </template>
   
 <script>
+import Popup from './Popup.vue';
+
 
 export default {
   data() {
@@ -105,6 +114,7 @@ export default {
       new_password :"" , 
       confirm_new_password : "" ,
       url : "http://localhost:3000" ,
+      showDeleteConfirm: false, 
     };
   },
   mounted() {
@@ -191,7 +201,29 @@ export default {
                 this.errorMessage = "" 
                 this.successMessage = ""
             }, 5000)
-    }
+    }, 
+    deleteAccount() {
+      fetch(this.url+"/deleteAccount", {
+            method : "delete", 
+            mode : "cors",
+            headers : {
+                "Content-Type" : "Application/json",
+            },
+            credentials : "include",
+      }).then(async (response) => {
+        if (response.ok) {
+          // Show success message (optional)
+          this.showSuccess = true;
+          this.successMessage = 'Account deleted successfully';
+          
+          // Redirect to login after a small delay
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 1000);
+        } else {
+          console.error("Error deleting the user")
+        }
+      })
+  }}
   }
-};
 </script>
