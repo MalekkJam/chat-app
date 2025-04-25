@@ -11,6 +11,7 @@ import Home from "./components/Home.vue";
 import Conversation from "./components/Conversation.vue";
 import Settings from "./components/Settings.vue";
 import router from "@/routes/routes";
+import Popup from "./components/Popup.vue";
 
 const app = createApp(App);
 
@@ -23,7 +24,8 @@ app.component("Navbar", Navabar);
 app.component("Home", Home);
 app.component("SuccessMessage", SuccessMessage);
 app.component("Conversation", Conversation);
-app.component("Settings",Settings); 
+app.component("Popup", Popup);
+app.component("Settings", Settings);
 
 app.use(router);
 app.mount("#app");

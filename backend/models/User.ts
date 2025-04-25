@@ -79,16 +79,20 @@ export const find_info_by_username = async (username : string) => {
     }
 }
 
-export const update_User_Data = async(username : string, new_username : string) => {
+export const update_User_Data = async(category : string, username : string ,new_value : string) => {
     // Test username and returns true if it exists already 
-    const test_username = await testDataBeforeUpdate("username",new_username) ;  
-    const query = "UPDATE User SET username = ? WHERE username = ?";
-
+    var test_data = false ; 
+    console.log("Hola hla")
+    console.log("my type is ",category)
+    if (category == "username") {
+        test_data = await testDataBeforeUpdate(category,new_value) ;  
+    }
+    const query = `UPDATE User SET ${category} = ? WHERE username = ?`;
     try{
-        if (test_username) {
+        if (test_data) {
             return 
         }else {
-            const result = db.prepare(query).all(new_username,username)
+            const result = db.prepare(query).all(new_value,username)
             return result 
         }
     }catch (error) {
@@ -101,7 +105,6 @@ const testDataBeforeUpdate = async (category : string, data: string): Promise<bo
 
     try {
         const result = await db.prepare(query).all(data);
-        console.log(result)
         return result.length > 0; // Return true if username exists, false otherwise
     } catch (error) {
         console.error("Error checking username:", error);
@@ -109,7 +112,19 @@ const testDataBeforeUpdate = async (category : string, data: string): Promise<bo
     }
 };
 
+export const find_password_by_username = async (username : string) : Promise<string> => {
+    const query = "SELECT password_hash FROM User WHERE username = ?" ; 
 
+    try {
+        
+        const result = await db.prepare(query).all(username) as {password_hash : string}[]; 
+        return result[0].password_hash ; 
+    }
+    catch (error) {
+        console.error("Error checking username:", error);
+        throw error;
+    }
+}
 
 
 

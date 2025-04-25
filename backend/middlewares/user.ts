@@ -1,5 +1,5 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 
@@ -186,30 +186,71 @@ export const updateUserData = async (ctx : Context) => {
       return 
     }
 
+
+
     const {payload} = await jwtVerify(token,secret)
     const username = payload.username as string
 
-    const { new_username } = await ctx.request.body().value
-    const result = await update_User_Data(username,new_username)
+    const {data} = await ctx.request.body().value ; 
 
-    if (result == undefined) {
-      ctx.response.status = 401 
-      ctx.response.body = {message : "Username already exists, try new one !"}
-      return
+    if (data == "username") {
+      const { new_username } = await ctx.request.body().value
+      const result = await update_User_Data("username",username,new_username)
+      
+      if (result == undefined) {
+        ctx.response.status = 401 
+        ctx.response.body = {message : "Username already exists, try new one !"}
+        return
+      }
+  
+      // Delete the old token to maintain connection 
+      await ctx.cookies.delete("auth_token");
+      // Generating the new token
+      const _payload = { username : new_username, role: "user" };
+      const new_token = await createJWT(_payload);
+      // Generating the cookie 
+      ctx.cookies.set("auth_token", new_token, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 60 * 60,
+        secure: false,
+      });
     }
 
-    // Delete the old token to maintain connection 
-    await ctx.cookies.delete("auth_token");
-    // Generating the new token
-    const _payload = { username : new_username, role: "user" };
-    const new_token = await createJWT(_payload);
-    // Generating the cookie 
-    ctx.cookies.set("auth_token", new_token, {
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 60 * 60,
-      secure: false,
-    });
+    if (data == "password") {
+      const {current_password , new_password , confirm_new_password} = await ctx.request.body().value ; 
+
+
+      
+      if (new_password != confirm_new_password) {
+        ctx.response.status = 400 
+        ctx.response.body = {message : "Not the same password !"}
+        return 
+      }
+
+      if (new_password.length < 4 || new_password.length > 20) {
+        ctx.response.status = 400;
+        ctx.response.body = { message: "New password must be between 4 and 20 characters long" };
+        return;
+      }
+
+      const hashed_password = await find_password_by_username(username) ;
+
+  
+ 
+      const compare_passwords = bcrypt.compareSync(current_password,hashed_password) ;
+  
+      if (!compare_passwords) {
+        ctx.response.status = 400 ; 
+        ctx.response.body = { message: "Please enter the correct password" };
+        return;
+      }
+
+      const hash = await bcrypt.hashSync(new_password,salt);
+      await update_User_Data("password_hash",username,hash) ; 
+
+    }
+
 
     ctx.response.status = 200 
     ctx.response.body = {message : "Your information has been succesfully saved !"}

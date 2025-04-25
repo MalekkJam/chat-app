@@ -41,7 +41,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
       const { type,action } = JSON.parse(event.data.toString()); 
       const authSocket = socket as AuthenticatedWebSocket;
         if (type == "message") {
-          const {conversation} = JSON.parse(event.data.toString())
+          const {conversation } = JSON.parse(event.data.toString())
           _addMessage(authSocket,action,conversation)
           broadcastMessage(clients,action,conversation)
         }

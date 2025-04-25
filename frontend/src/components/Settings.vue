@@ -71,7 +71,9 @@
                   class="w-full px-4 py-2 text-sm border rounded-lg bg-gray-50 border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
                   placeholder="••••••••">
               </div>
-            </div>
+                <ErrorMessage v-if="showError" :message="errorMessage" class="mt-2 text-red-500"></ErrorMessage>
+                <SuccessMessage v-if="showSuccess" :message="successMessage" class="mt-2 text-green-500"></SuccessMessage>
+              </div>
             <button @click="updatePassword()" class="mt-6 px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">  <!-- Increased mt-4 to mt-6 -->
               Update Password
             </button>
@@ -91,8 +93,6 @@
   </template>
   
 <script>
-import ErrorMessage from './ErrorMessage.vue';
-import SuccessMessage from './SuccessMessage.vue';
 
 export default {
   data() {
@@ -135,9 +135,41 @@ export default {
                 "Content-Type" : "Application/json",
             },
             credentials : "include",
-            body : JSON.stringify({new_username : this.username })
+            body : JSON.stringify({data : username , new_username : this.username })
         }).then(async (response) => {
-            console.log("Salam")
+            const data = await response.json();
+            if (response.ok) {
+                this.isEditing = false 
+                if (this.showError) 
+                    this.showError = false 
+                this.showSuccess = true 
+                this.successMessage = data.message;
+            }
+            else {
+                if(this.showSuccess) {
+                    this.showSuccess = false 
+                }
+                this.showError = true 
+                this.errorMessage = data.message
+                setTimeout(()=> {
+                this.showSuccess = false 
+                this.showError = false 
+                this.errorMessage = "" 
+                this.successMessage = ""
+            }, 9000)
+            }})
+           
+    }, 
+    updatePassword() {
+        fetch(this.url+"/updateUserData", {
+            method : "PUT",
+            mode : "cors",
+            headers : {
+                "Content-Type" : "Application/json",
+            },
+            credentials : "include",
+            body : JSON.stringify({data : "password" , current_password : this.current_password, new_password : this.new_password, confirm_new_password : this.confirm_new_password }) 
+        }).then(async (response) => {
             const data = await response.json();
             if (response.ok) {
                 this.isEditing = false 
@@ -156,18 +188,9 @@ export default {
             setTimeout(()=> {
                 this.showSuccess = false 
                 this.showError = false 
+                this.errorMessage = "" 
+                this.successMessage = ""
             }, 5000)
-    }, 
-    updatePassword() {
-        fetch(this.url+"/updatePassword", {
-            method : "PUT",
-            mode : "cors",
-            headers : {
-                "Content-Type" : "Application/json",
-            },
-            credentials : "include",
-            body : JSON.stringify({current_password : this.current_password, new_password : this.new_password, confirm_new_password : this.confirm_new_password }) 
-        })
     }
   }
 };
