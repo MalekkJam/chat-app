@@ -21,15 +21,20 @@ export const initWebSocket = async (): Promise<WebSocket> => {
       resolve(socket!);
     };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket connection failed:", error);
+    socket.onerror = (event) => {
+      if (socket.readyState !== WebSocket.CLOSED) { // Stop lauching an error when the connection is closed from the back
+      console.error("WebSocket connection failed:", event);
       socket = null;
       connectionPromise = null;
       reject(new Error("WebSocket connection failed")); // Reject the promise
+    }
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
+    socket.onclose = (event) => {
+      console.log("WebSocket connection closed", event.reason);
+      if (event.reason == "Account deleted" || event.reason == "Logged out") {
+        window.location.href = "/login" 
+      }
       socket = null;
       connectionPromise = null;
     };

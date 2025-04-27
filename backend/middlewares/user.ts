@@ -1,7 +1,8 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account, test_data_authenticity} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
+import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 
 // JWT Secret
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
@@ -33,6 +34,21 @@ export const registration = async (ctx : Context) => {
     }
 
     // Add a unicity username and email tests 
+    const test_username = await test_data_authenticity("username",username) ; 
+
+    if (test_username || username == "admin") {
+      ctx.response.status = 400 ; 
+      ctx.response.body = {message : "Username already used choose another one"}
+      return 
+    }
+
+    const test_email = await test_data_authenticity("email",email) ; 
+
+    if (test_email) {
+      ctx.response.status = 400 ; 
+      ctx.response.body = {message : "Email already used choose another one"}
+      return 
+    }
 
     // Validate Password Length
     if (password.length < 4 || password.length > 20) {
@@ -108,8 +124,28 @@ export const login = async(ctx : Context) => {
 }
 
 // Logout handler 
-export const logout = async (ctx : Context) => {
+export const logout = async (ctx : Context, clients : Set<WebSocket>) => {
+  const token = await ctx.cookies.get("auth_token")
+
+    if (!token) {
+      ctx.response.status = 401
+      ctx.response.body = {message : "Unathorized"}
+      return 
+    }
+    const {payload} = await jwtVerify(token,secret)
+    const username = payload.username as string
+  
   const result = await ctx.cookies.delete("auth_token");
+  
+  for (const client of clients) {
+    const authSocket = client as AuthenticatedWebSocket;
+    if (authSocket.username === username) {
+      console.log(`Closing WebSocket connection for user: ${username}`);
+      client.close(1000, "Logged out");
+      clients.delete(client); // Remove the client from the set
+      break;
+    }
+  }
   result ? ctx.response.status = 200 : ctx.response.status = 400 ;  
 }
 
@@ -262,7 +298,7 @@ export const updateUserData = async (ctx : Context) => {
   }
 }
 
-export const deleteAccount = async (ctx : Context) => {
+export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
   try {
     const token = await ctx.cookies.get("auth_token")
 
@@ -271,14 +307,21 @@ export const deleteAccount = async (ctx : Context) => {
       ctx.response.body = {message : "Unathorized"}
       return 
     }
-
-
-
     const {payload} = await jwtVerify(token,secret)
     const username = payload.username as string
     await delete_Account(username) ; 
-    console.log("wsel")
    ctx.cookies.delete("auth_token")
+
+    // Close the WebSocket connection for the user
+    for (const client of clients) {
+      const authSocket = client as AuthenticatedWebSocket;
+      if (authSocket.username === username) {
+        console.log(`Closing WebSocket connection for user: ${username}`);
+        client.close(1000, "Account deleted");
+        clients.delete(client); // Remove the client from the set
+        break;
+      }
+    }
 
    ctx.response.status = 200 
    ctx.response.body = {message : "Account deleted !"}

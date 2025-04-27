@@ -21,6 +21,20 @@ export const registerUser = async (user: User) => {
     }
 }
 
+export const test_data_authenticity =  (category : string, data : string) : boolean => {
+    const query = `SELECT * FROM User WHERE ${category} = ?`
+
+    try {
+        const result = db.prepare(query).all(data) ; 
+        return result.length > 0
+
+    }catch (error){
+        console.log(`Error while trying to test ${category} authenticity !`)
+        throw error
+    }
+}
+
+
 export const find_username_by_email = async (email : string ) : Promise<string>=> {
     const query = `SELECT username FROM User WHERE email = ?` ; 
     try {
@@ -67,7 +81,7 @@ export const find_username_by_id = async (id : number) => {
     }
 }
 
-export const find_info_by_username = async (username : string) => {
+export const find_info_by_username = (username : string) => {
     const query = "SELECT username, email FROM User WHERE username = ?"
 
     try {
@@ -127,7 +141,7 @@ export const find_password_by_username = async (username : string) : Promise<str
 }
 
 export const delete_Account = async (username: string) => {
-    const query = "DELETE FROM User WHERE username = ?";
+    const query = "UPDATE User SET username = 'unknown', email = 'unknown' WHERE username = ?";
     try {
         // Execute the DELETE query
         const result = await db.prepare(query).run(username); // Use .run() for DELETE queries

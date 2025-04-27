@@ -14,13 +14,13 @@ const clients = new Set<WebSocket>();
 
 router.post("/registration", registration);
 router.post("/login",login) ; 
-router.post("/logout",logout) ; 
+router.post("/logout",(ctx)=>logout(ctx,clients)) ; 
 router.post("/verifyToken",verifyToken) ; 
 router.get("/getUsername",getUsername) ;
 router.get("/getConversations", getConversations);
 router.get("/getUserInfo", getUserInfo)
 router.put("/updateUserData", updateUserData)
-router.delete("/deleteAccount", deleteAccount) 
+router.delete("/deleteAccount", (ctx)=>deleteAccount(ctx,clients)) 
     
 // WebSocket endpoint
 router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));
