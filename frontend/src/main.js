@@ -8,9 +8,10 @@ import SuccessMessage from "./components/SuccessMessage.vue";
 import Sidebar from "./components/Sidebar.vue";
 import Navabar from "./components/Navbar.vue";
 import Home from "./components/Home.vue";
-import Main from "./components/Main.vue";
 import Conversation from "./components/Conversation.vue";
+import Settings from "./components/Settings.vue";
 import router from "@/routes/routes";
+import Popup from "./components/Popup.vue";
 
 const app = createApp(App);
 
@@ -23,7 +24,8 @@ app.component("Navbar", Navabar);
 app.component("Home", Home);
 app.component("SuccessMessage", SuccessMessage);
 app.component("Conversation", Conversation);
-app.component("Main", Main);
+app.component("Popup", Popup);
+app.component("Settings", Settings);
 
 app.use(router);
 app.mount("#app");
