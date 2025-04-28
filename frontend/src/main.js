@@ -12,6 +12,9 @@ import Conversation from "./components/Conversation.vue";
 import Settings from "./components/Settings.vue";
 import router from "@/routes/routes";
 import Popup from "./components/Popup.vue";
+import AdminAnalytics from "./components/AdminAnalytics.vue";
+import AdminTable from "./components/AdminTable.vue";
+
 
 const app = createApp(App);
 
@@ -26,6 +29,8 @@ app.component("SuccessMessage", SuccessMessage);
 app.component("Conversation", Conversation);
 app.component("Popup", Popup);
 app.component("Settings", Settings);
+app.component("AdminAnalytics", AdminAnalytics);
+app.component("AdminTable",AdminTable) ; 
 
 app.use(router);
 app.mount("#app");

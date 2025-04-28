@@ -122,7 +122,7 @@ export default {
                         this.successMessage = "New account added"
                         setTimeout(() => {
                           this.$router.push("/login");
-                        }, 3000);
+                        }, 2000);
                     }else {
                         response.json().then(data => {
                           this.showErrorMessage = true;

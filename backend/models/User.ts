@@ -1,13 +1,13 @@
 import { userInfo } from "node:os";
 import db from "../config/database.ts";
 import test from "node:test";
+import { copyBytes } from "https://deno.land/x/oak@v12.6.1/deps.ts";
 
 export interface User {
     username : string;
     email : string;
     password : string;
 }
-
 
 export const registerUser = async (user: User) => {
     const query = `INSERT INTO User (username, email, password_hash) VALUES (?,?,?)`;
@@ -152,6 +152,31 @@ export const delete_Account = async (username: string) => {
         throw error; // Re-throw the error for the caller to handle
     }
 };
+
+export const get_Nb_Users = async () => {
+    const query = "SELECT COUNT(*) as nbTotalUsers FROM User"
+
+    try {
+        const result = db.prepare(query).all() as {nbTotalUsers : number} [] ;  
+        return result[0].nbTotalUsers ; 
+    }
+    catch(error) {
+        console.error("Error while counting the total number of users")
+        throw error 
+    }
+}
+
+export const get_all_users = async() => {
+    const query = "SELECT username, email, joined_at FROM User WHERE username != 'unknown' AND email != 'unknown' AND username != 'admin'" 
+    try {
+        const result = await db.prepare(query).all() ; 
+        return result ; 
+    }catch (error) {
+        console.error("error while getting all the users") ; 
+        throw error ; 
+    }
+}
+
 
 
 
