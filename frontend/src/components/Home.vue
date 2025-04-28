@@ -11,17 +11,19 @@
       <Sidebar class="w-64 flex-shrink-0"></Sidebar>
 
       <!-- Main content on the right -->
-      <section class="flox-grow pt-20 pl-70 w-full rounded-tl-lg bg-white shadow">
-        <router-view></router-view>
+      <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
+        <!-- <router-view></router-view> -->
+         <!-- <AdminAnalytics></AdminAnalytics> -->
+         <AdminTable></AdminTable>
       </section>
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from "@/components/Navbar.vue" 
-import Sidebar from "@/components/Sidebar.vue" 
 import { initWebSocket } from "@/services/websocket.service";
+import AdminAnalytics from "./AdminAnalytics.vue";
+import AdminTable from "./AdminTable.vue";
 
 
 export default {

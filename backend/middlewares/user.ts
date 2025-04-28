@@ -36,7 +36,7 @@ export const registration = async (ctx : Context) => {
     // Add a unicity username and email tests 
     const test_username = await test_data_authenticity("username",username) ; 
 
-    if (test_username || username == "admin") {
+    if (test_username ) {
       ctx.response.status = 400 ; 
       ctx.response.body = {message : "Username already used choose another one"}
       return 
@@ -102,8 +102,14 @@ export const login = async(ctx : Context) => {
 
     const username : string = await find_username_by_email(email) ; 
 
+    let payload;
+    if (username == "admin") {
+      payload = { username: username, role: "admin" };
+    } else {
+      payload = { username: username, role: "user" };
+    }
+
     // Generating the token
-    const payload = { username : username, role: "user" };
     const token = await createJWT(payload);
     
     // Generating the cookie 

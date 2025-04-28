@@ -3,7 +3,8 @@ import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import { registration , login, logout, verifyToken, getUsername, getUserInfo, updateUserData, deleteAccount} from "./middlewares/user.ts";
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 import { getConversations } from "./middlewares/chat.ts";
-
+import {getKpis, getAllUsers}  from "./middlewares/admin.ts" ; 
+ 
 const router = new Router();
 const app = new Application();
 const port = Deno.args[0] ? Number(Deno.args[0]) : 3000;
@@ -21,7 +22,9 @@ router.get("/getConversations", getConversations);
 router.get("/getUserInfo", getUserInfo)
 router.put("/updateUserData", updateUserData)
 router.delete("/deleteAccount", (ctx)=>deleteAccount(ctx,clients)) 
-    
+router.get("/getKpis", getKpis) ; 
+router.get("/getAllUsers",getAllUsers) ; 
+
 // WebSocket endpoint
 router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));
 

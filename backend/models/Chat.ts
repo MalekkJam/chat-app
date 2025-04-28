@@ -24,3 +24,16 @@ export const get_chatID_by_chatName = async (chat_name : string ) =>  {
         throw error 
     }
 }
+
+export const get_Nb_Conversations = async () => {
+    const query = "SELECT COUNT(*) as nbConversation FROM Chat" ; 
+
+    try {
+        const result = await db.prepare(query).all() as {nbConversation  : number} [] ;
+        return result[0].nbConversation ; 
+    }
+    catch (error) {
+        console.log("Error while counting the Chat")
+        throw error 
+    }
+}
