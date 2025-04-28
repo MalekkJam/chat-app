@@ -27,6 +27,21 @@ import { initWebSocket } from "@/services/websocket.service";
 export default {
   async mounted() {
     try {
+      const url = "http://localhost:3000";
+      
+      fetch(url+"/verifyToken", {
+        method : "POST",
+        mode : "cors", 
+        headers : {
+          "Content-Type" : "Application/json"
+        }, 
+        credentials : "include"
+      }).then((Response) => {
+        if (Response.status != 200) {
+          this.$router.push("/login"); 
+        }
+      })
+      
       // Check if the websocket exists if not will create a new one else it will redirect 
       await initWebSocket() ; 
     } catch (error) {
