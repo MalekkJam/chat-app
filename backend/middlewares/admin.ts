@@ -2,7 +2,7 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { jwtVerify } from "npm:jose@5.9.6/jwt/verify";
 import { get_Nb_Conversations , get_All_chats , get_chat_participants , get_chatID_by_chatName } from "../models/Chat.ts";
 import { get_Nb_Users, get_all_users, get_Nb_new_users , find_userId_by_username} from "../models/User.ts";
-import {kick_user_from_chat} from "../models/ChatParticipant.ts"
+import {kick_user_from_chat , get_users_not_in_chat, add_user_to_chat} from "../models/ChatParticipant.ts"
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
@@ -153,10 +153,8 @@ export const kickUserFromChat = async (ctx : Context) => {
         }
 
         const {username , conversation_name} = await ctx.request.body().value;
-
         const conversation_id = await get_chatID_by_chatName(conversation_name) ; 
         const user_id = await find_userId_by_username(username) ; 
-
         await kick_user_from_chat(conversation_id,user_id) ; 
         
         ctx.response.status = 200 ; 
@@ -166,4 +164,66 @@ export const kickUserFromChat = async (ctx : Context) => {
         throw error 
     }   
 
+}
+
+export const getAvailableParticipants = async (ctx: Context) => {
+    try {const token = await ctx.cookies.get("auth_token") ; 
+
+        if (!token) {
+            ctx.response.status = 401 ; 
+            ctx.response.body = {message : "Not authorized"} ; 
+            return ; 
+        }
+    
+        const {payload} = await jwtVerify(token,secret) ; 
+        const role = payload.role as string
+    
+        if (role != "admin") {
+            ctx.response.status = 403 ; 
+            ctx.response.body = {message : "Not authorized you are not the admin"} ; 
+            return ; 
+        }
+
+        const { conversation_name} = await ctx.request.body().value;
+
+        const conversation_id = await get_chatID_by_chatName(conversation_name) ; 
+
+        const result = await get_users_not_in_chat(conversation_id) ; 
+        ctx.response.status = 200 ; 
+        ctx.response.body = result
+    }
+    catch(error ) {
+        throw error 
+    }   
+}
+
+export const addUserToChat = async(ctx : Context) => {
+    try {const token = await ctx.cookies.get("auth_token") ; 
+
+        if (!token) {
+            ctx.response.status = 401 ; 
+            ctx.response.body = {message : "Not authorized"} ; 
+            return ; 
+        }
+    
+        const {payload} = await jwtVerify(token,secret) ; 
+        const role = payload.role as string
+    
+        if (role != "admin") {
+            ctx.response.status = 403 ; 
+            ctx.response.body = {message : "Not authorized you are not the admin"} ; 
+            return ; 
+        }
+
+        const { username , conversation_name} = await ctx.request.body().value;
+
+        const conversation_id = await get_chatID_by_chatName(conversation_name) ; 
+        const user_id = await find_userId_by_username(username) ; 
+
+        await  add_user_to_chat(conversation_id, user_id) ; 
+        ctx.response.status = 200 ; 
+    }
+    catch(error ) {
+        throw error 
+    }   
 }

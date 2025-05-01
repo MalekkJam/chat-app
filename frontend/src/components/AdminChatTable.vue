@@ -49,14 +49,13 @@
                         </td>
                         <td class="px-6 py-4">
                         <button 
-                            @click="addParticipants(conversation.chatName)"
-                            class="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200"
+                            @click="openAddParticipants(conversation.chat_name)"
+                            class="p-1.5 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30"
                             title="Add participants"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            Add
                         </button>
                         </td>
 
@@ -71,96 +70,153 @@
         @close="closeParticipantsModal"
         @kick="kickUser"
         />
+        <PopupTable
+        :isOpen="showAddModal"
+        :chatName="selectedChatName"
+        :participants="availableUsers"
+        mode="add"
+        @close="closeAddModal"
+        @add="addUser"
+        />
     </div>
     
 </template>
       
 <script>
-    import PopupTable from './PopupTable.vue';
-    export default {
-    components: {
-        PopupTable
-    },
-    data() {
-        return {
-            conversations: [], 
-            showParticipantsModal: false,
-            selectedChatName: '',
-            participants: [], 
-            url: "http://localhost:3000", 
-        }
-    }, 
-    mounted() {
-        this.updateTable();
-    },
-    methods: {
-        updateTable() {
-            fetch(this.url + "/getAllChats", {
-                method: "GET",
-                mode: "cors", 
-                headers: {
-                    "Content-Type": "Application/json"
-                }, 
-                credentials: "include"
-            }).then(async(response) => {
-                const data = await response.json();
-                this.conversations = data; 
-            })
-        }, 
+import PopupTable from './PopupTable.vue';
 
-        openParticipantsModal(chatName) {
-            this.selectedChatName = chatName;
-            this.fetchParticipants();
-        },
-        
-        fetchParticipants() {
-            fetch(this.url + "/getChatParticipants", {
-                method: "POST",
-                mode: "cors", 
-                credentials: "include", 
-                headers: {
-                    "Content-Type": "Application/json"
-                }, 
-                body: JSON.stringify({conversation_name: this.selectedChatName})
-            }).then(async(response) => {
-                if (response.status == 200) {
-                    const data = await response.json();
-                    this.participants = data; 
-                    this.showParticipantsModal = true;
-                }
-            })
-        },
-
-        closeParticipantsModal() {
-            this.showParticipantsModal = false;
-        },
-
-        async kickUser(username) {
-            try {
-                const response = await fetch(this.url + "/kickUserFromChat", {
-                    method: "POST",
-                    mode: "cors", 
-                    headers: {
-                        "Content-Type": "Application/json"
-                    }, 
-                    credentials: "include", 
-                    body: JSON.stringify({
-                        username: username, 
-                        conversation_name: this.selectedChatName
-                    })
-                });
-                
-                if (response.status === 200) {
-                
-                    this.fetchParticipants();
-                    
-                } else {
-                }
-            } catch (error) {
-                console.error("Error kicking user:", error);
-            }
-        }
+export default {
+  components: {
+    PopupTable
+  },
+  data() {
+    return {
+      conversations: [], 
+      showParticipantsModal: false,
+      showAddModal: false, 
+      selectedChatName: '',
+      participants: [], 
+      availableUsers: [], 
+      url: "http://localhost:3000", 
     }
-}
+  }, 
+  mounted() {
+    this.updateTable();
+  },
+  methods: {
+    updateTable() {
+      fetch(this.url + "/getAllChats", {
+        method: "GET",
+        mode: "cors", 
+        headers: {
+          "Content-Type": "Application/json"
+        }, 
+        credentials: "include"
+      }).then(async(response) => {
+        const data = await response.json();
+        this.conversations = data; 
+      })
+    }, 
 
+    openParticipantsModal(chatName) {
+      this.selectedChatName = chatName;
+      this.fetchParticipants(chatName);
+      this.showParticipantsModal = true;
+    },
+    
+    fetchParticipants(chatName) {
+      fetch(this.url + "/getChatParticipants", {
+        method: "POST",
+        mode: "cors", 
+        credentials: "include", 
+        headers: {
+          "Content-Type": "Application/json"
+        }, 
+        body: JSON.stringify({conversation_name: chatName})
+      }).then(async(response) => {
+        if (response.status == 200) {
+          const data = await response.json();
+          this.participants = data; 
+        }
+      })
+    },
+
+    openAddParticipants(chatName) {
+      this.selectedChatName = chatName;
+      this.fetchAvailableUsers(chatName);
+      this.showAddModal = true;
+    },
+
+    fetchAvailableUsers(chatName) {
+      fetch(this.url + "/getAvailableParticipants", {
+        method: "POST",
+        mode: "cors", 
+        credentials: "include", 
+        headers: {
+          "Content-Type": "Application/json"
+        }, 
+        body: JSON.stringify({conversation_name: chatName})
+      }).then(async(response) => {
+        if (response.status == 200) {
+          const data = await response.json();
+          this.availableUsers = data;
+        }
+      })
+    },
+
+    kickUser(username) {
+      fetch(this.url + "/kickUserFromChat", {
+        method: "POST",
+        mode: "cors", 
+        headers: {
+          "Content-Type": "Application/json"
+        }, 
+        credentials: "include", 
+        body: JSON.stringify({
+          username: username, 
+          conversation_name: this.selectedChatName
+        })
+      }).then((response) => {
+        if (response.status === 200) {
+          this.fetchParticipants(this.selectedChatName);
+        }
+      })              
+    }, 
+
+    addUser(username) {
+        fetch(this.url+"/addUserToChat",{
+        method: "POST",
+        mode: "cors", 
+        headers: {
+          "Content-Type": "Application/json"
+        }, 
+        credentials: "include", 
+        body: JSON.stringify({
+          username: username, 
+          conversation_name: this.selectedChatName
+        })
+      }).then((response) => {
+        if (response.status == 200) {
+            this.fetchAvailableUsers(this.selectedChatName)
+        }
+      })
+        
+    },
+
+
+    closeModal() {  
+      this.showParticipantsModal = false;
+      this.showAddModal = false;
+    },
+
+    
+    closeParticipantsModal() {
+      this.showParticipantsModal = false;
+    },
+
+    closeAddModal() {
+      this.showAddModal = false;
+    }
+  }
+}
 </script>
