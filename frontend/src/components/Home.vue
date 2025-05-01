@@ -14,7 +14,8 @@
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
         <!-- <router-view></router-view> -->
          <!-- <AdminAnalytics></AdminAnalytics> -->
-         <AdminTable></AdminTable>
+         <!-- <AdminUserTable></AdminUserTable> -->
+          <AdminChatTable></AdminChatTable>
       </section>
     </div>
   </div>
@@ -23,7 +24,8 @@
 <script>
 import { initWebSocket } from "@/services/websocket.service";
 import AdminAnalytics from "./AdminAnalytics.vue";
-import AdminTable from "./AdminTable.vue";
+import AdminTable from "./AdminUserTable.vue";
+import AdminChatTable from "./AdminChatTable.vue";
 
 
 export default {

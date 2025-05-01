@@ -177,6 +177,19 @@ export const get_all_users = async() => {
     }
 }
 
+export const get_Nb_new_users = async () => {
+    const query = "SELECT COUNT(*) as nbNewUsers FROM User WHERE DATE(joined_at) = DATE('now')" ; 
+
+    try {
+        const result = db.prepare(query).all() as {nbNewUsers : number} []; 
+        return result[0].nbNewUsers ; 
+    }
+    catch(error) {
+        console.log("error while counting the number of the new users") ; 
+        throw error ; 
+    }
+}
+
 
 
 

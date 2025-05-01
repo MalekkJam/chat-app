@@ -13,8 +13,8 @@ import Settings from "./components/Settings.vue";
 import router from "@/routes/routes";
 import Popup from "./components/Popup.vue";
 import AdminAnalytics from "./components/AdminAnalytics.vue";
-import AdminTable from "./components/AdminTable.vue";
-
+import AdminUserTable from "./components/AdminUserTable.vue";
+import AdminChatTable from "./components/AdminChatTable.vue";
 
 const app = createApp(App);
 
@@ -30,7 +30,8 @@ app.component("Conversation", Conversation);
 app.component("Popup", Popup);
 app.component("Settings", Settings);
 app.component("AdminAnalytics", AdminAnalytics);
-app.component("AdminTable",AdminTable) ; 
+app.component("AdminUserTable", AdminUserTable);
+app.component("AdminChatTable", AdminChatTable);
 
 app.use(router);
 app.mount("#app");

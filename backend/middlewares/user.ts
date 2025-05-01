@@ -314,9 +314,15 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
       return 
     }
     const {payload} = await jwtVerify(token,secret)
-    const username = payload.username as string
-    await delete_Account(username) ; 
-   ctx.cookies.delete("auth_token")
+    const username = payload.username as string;
+    if (username === "admin") {
+      const { username } = await ctx.request.body().value;
+      await delete_Account(username) ; 
+    }else {
+      await delete_Account(username) ; 
+      ctx.cookies.delete("auth_token")
+    }
+
 
     // Close the WebSocket connection for the user
     for (const client of clients) {
