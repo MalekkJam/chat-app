@@ -1,3 +1,3 @@
 UPDATE ChatParticipant
-SET user_id = 2
-WHERE user_id = 11 AND chat_id = 1;
+SET user_id = 2, chat_id = 2
+WHERE user_id = 0 AND chat_id = 1;

@@ -1,7 +1,8 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { jwtVerify } from "npm:jose@5.9.6/jwt/verify";
-import { get_Nb_Conversations , get_All_chats , get_chat_participants } from "../models/Chat.ts";
-import { get_Nb_Users, get_all_users, get_Nb_new_users } from "../models/User.ts";
+import { get_Nb_Conversations , get_All_chats , get_chat_participants , get_chatID_by_chatName } from "../models/Chat.ts";
+import { get_Nb_Users, get_all_users, get_Nb_new_users , find_userId_by_username} from "../models/User.ts";
+import {kick_user_from_chat} from "../models/ChatParticipant.ts"
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
@@ -131,4 +132,38 @@ export const getChatParticipants = async (ctx: Context) => {
         console.error("Error in the middlewware")
         throw(error)
     }
+}
+
+export const kickUserFromChat = async (ctx : Context) => {
+    try {const token = await ctx.cookies.get("auth_token") ; 
+
+        if (!token) {
+            ctx.response.status = 401 ; 
+            ctx.response.body = {message : "Not authorized"} ; 
+            return ; 
+        }
+    
+        const {payload} = await jwtVerify(token,secret) ; 
+        const role = payload.role as string
+    
+        if (role != "admin") {
+            ctx.response.status = 403 ; 
+            ctx.response.body = {message : "Not authorized you are not the admin"} ; 
+            return ; 
+        }
+
+        const {username , conversation_name} = await ctx.request.body().value;
+
+        const conversation_id = await get_chatID_by_chatName(conversation_name) ; 
+        const user_id = await find_userId_by_username(username) ; 
+
+        await kick_user_from_chat(conversation_id,user_id) ; 
+        
+        ctx.response.status = 200 ; 
+        ctx.response.body = {message : "User kicked out succefully"}
+    }
+    catch(error ) {
+        throw error 
+    }   
+
 }
