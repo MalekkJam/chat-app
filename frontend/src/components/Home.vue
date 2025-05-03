@@ -12,7 +12,7 @@
 
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
-        <!-- <router-view></router-view> -->
+        <router-view></router-view>
          <!-- <AdminAnalytics></AdminAnalytics> -->
          <!-- <AdminUserTable></AdminUserTable> -->
           <AdminChatTable></AdminChatTable>

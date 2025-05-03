@@ -63,3 +63,15 @@ export const get_chat_participants = async (chat_name : string) => {
 
 
 }
+
+export const delete_Conversation = async (chat_id : string) => {
+    const query = "DELETE FROM Chat WHERE chat_id = ?"
+
+    try {
+        const result = await db.prepare(query).all(chat_id)
+        return result
+    }catch(error) {
+        console.error("Error deleting the conv in Chat table")
+        throw error 
+    }
+}

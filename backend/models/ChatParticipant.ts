@@ -37,3 +37,18 @@ export const add_user_to_chat = async (conversation_id: string, user_id: string)
         throw error;
     }
 };
+
+export const delete_chat_with_participants = async (chat_id : string) => {
+    const query1 = "DELETE FROM ChatParticipant  WHERE chat_id = ?"
+    const query2 =  "DELETE FROM Chat WHERE chat_id = ?"
+
+    try {
+        await db.prepare(query1).all(chat_id) ; 
+        await db.prepare(query2).all(chat_id) ; 
+        return true  
+    }
+    catch(error) {
+        console.log("error while deleting from ChatParticipant table")
+        throw error 
+    }
+}

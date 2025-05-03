@@ -50,6 +50,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
           switch (action) {
      
               case "loadMessages": {
+                console.log("Loading messages")
                   const {conversation} = JSON.parse(event.data.toString())
                   const messages = await getMessages(conversation) 
                   // join the two tables to get a table containing usernames and messages
