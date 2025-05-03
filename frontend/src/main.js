@@ -15,6 +15,8 @@ import Popup from "./components/Popup.vue";
 import AdminAnalytics from "./components/AdminAnalytics.vue";
 import AdminUserTable from "./components/AdminUserTable.vue";
 import AdminChatTable from "./components/AdminChatTable.vue";
+import AdminAddConversation from "./components/AdminAddChat.vue";
+import AdminChatContainer from "./components/AdminChatContainer.vue";
 
 const app = createApp(App);
 
@@ -32,6 +34,8 @@ app.component("Settings", Settings);
 app.component("AdminAnalytics", AdminAnalytics);
 app.component("AdminUserTable", AdminUserTable);
 app.component("AdminChatTable", AdminChatTable);
+app.component("AdminAddConversation", AdminAddConversation);
+app.component("AdminChatContainer", AdminChatContainer)
 
 app.use(router);
 app.mount("#app");

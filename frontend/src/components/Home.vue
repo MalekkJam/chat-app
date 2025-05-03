@@ -15,7 +15,7 @@
         <router-view></router-view>
          <!-- <AdminAnalytics></AdminAnalytics> -->
          <!-- <AdminUserTable></AdminUserTable> -->
-          <AdminChatTable></AdminChatTable>
+          <AdminChatContainer></AdminChatContainer>
       </section>
     </div>
   </div>
@@ -26,6 +26,8 @@ import { initWebSocket } from "@/services/websocket.service";
 import AdminAnalytics from "./AdminAnalytics.vue";
 import AdminTable from "./AdminUserTable.vue";
 import AdminChatTable from "./AdminChatTable.vue";
+import AdminAddConversation from "./AdminAddChat.vue";
+import AdminChatContainer from "./AdminChatContainer.vue";
 
 
 export default {

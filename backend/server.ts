@@ -3,7 +3,7 @@ import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import { registration , login, logout, verifyToken, getUsername, getUserInfo, updateUserData, deleteAccount} from "./middlewares/user.ts";
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 import { getConversations } from "./middlewares/chat.ts";
-import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation}  from "./middlewares/admin.ts" ; 
+import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation, addNewConversation}  from "./middlewares/admin.ts" ; 
  
 const router = new Router();
 const app = new Application();
@@ -30,6 +30,7 @@ router.post("/kickUserFromChat" , kickUserFromChat)
 router.post("/getAvailableParticipants", getAvailableParticipants)
 router.post("/addUserToChat",addUserToChat) ; 
 router.delete("/deleteConversation",deleteConversation) ;
+router.post("/addNewConversation", addNewConversation) ; 
 
 // WebSocket endpoint
 router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));

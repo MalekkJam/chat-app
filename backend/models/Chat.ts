@@ -75,3 +75,15 @@ export const delete_Conversation = async (chat_id : string) => {
         throw error 
     }
 }
+
+export const add_chat = async(chat_name : string , chat_type : string) => {
+    const query = "INSERT INTO Chat(chat_name,chat_type) VALUES (?,?)"
+
+    try {
+        const result = await db.prepare(query).all(chat_name,chat_type)
+        return result
+    }catch (error) {
+        console.error("Error while adding chat to db")
+        throw error 
+    }
+}
