@@ -38,6 +38,18 @@ export const add_user_to_chat = async (conversation_id: string, user_id: string)
     }
 };
 
+export const delete_User_From_ChatParticipant = async (user_id : string) => {
+    const query = "DELETE FROM ChatParticipant WHERE user_id = ?" 
+
+    try {
+        const result = await db.prepare(query).all(user_id)
+        return result 
+    }catch (error) {
+        console.error("Error in deleting the user in the ChatParticipant")
+        throw error 
+    }
+}
+
 export const delete_chat_with_participants = async (chat_id : string) => {
     const query1 = "DELETE FROM ChatParticipant  WHERE chat_id = ?"
     const query2 =  "DELETE FROM Chat WHERE chat_id = ?"
@@ -49,6 +61,19 @@ export const delete_chat_with_participants = async (chat_id : string) => {
     }
     catch(error) {
         console.log("error while deleting from ChatParticipant table")
+        throw error 
+    }
+}
+
+export const add_admin_to_new_chat = async (chat_id : string) => {
+    const query = "INSERT INTO ChatParticipant(chat_id,user_id) VALUES(?,1)"
+    
+    try {
+        const result = await db.prepare(query).all(chat_id) 
+        return result 
+    }
+    catch (error) {
+        console.error("Error while adding admin to the chat")
         throw error 
     }
 }

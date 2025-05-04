@@ -1,5 +1,6 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account, test_data_authenticity} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account_From_User_Table, test_data_authenticity , find_userId_by_username} from "../models/User.ts";
+import { delete_User_From_ChatParticipant } from "../models/ChatParticipant.ts"
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
@@ -36,7 +37,7 @@ export const registration = async (ctx : Context) => {
     // Add a unicity username and email tests 
     const test_username = await test_data_authenticity("username",username) ; 
 
-    if (test_username ) {
+    if (test_username || username == "admin") {
       ctx.response.status = 400 ; 
       ctx.response.body = {message : "Username already used choose another one"}
       return 
@@ -315,16 +316,17 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
     }
     const {payload} = await jwtVerify(token,secret)
     const username = payload.username as string;
-    if (username === "admin") {
+    if (username === "admin") { // The admin will himself delete the user 
       const { username } = await ctx.request.body().value;
-      await delete_Account(username) ; 
-    }else {
-      await delete_Account(username) ; 
-      ctx.cookies.delete("auth_token")
-    }
+      const user_id = await find_userId_by_username(username) 
+      await delete_User_From_ChatParticipant(user_id) ; 
+      await delete_Account_From_User_Table(username) ; 
+    }else { // the user deletes his account from the settings page 
+      const user_id = await find_userId_by_username(username) 
+      await delete_User_From_ChatParticipant(user_id) ; 
+      await delete_Account_From_User_Table(username) ; 
 
-
-    // Close the WebSocket connection for the user
+          // Close the WebSocket connection for the user
     for (const client of clients) {
       const authSocket = client as AuthenticatedWebSocket;
       if (authSocket.username === username) {
@@ -335,11 +337,19 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
       }
     }
 
+ // Remove the cookie for the user
+      ctx.cookies.delete("auth_token")
+    }
+
+
+
+
    ctx.response.status = 200 
    ctx.response.body = {message : "Account deleted !"}
 
   }catch (error) {
     ctx.response.status = 500 
     ctx.response.body = {message : "Internal server error"}
+    throw error 
   }
 }

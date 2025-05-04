@@ -8,14 +8,17 @@
     <!-- Main content area -->
     <div class="flex flex-1">
       <!-- Sidebar on the left -->
-      <Sidebar class="w-64 flex-shrink-0"></Sidebar>
+      <Sidebar class="w-64 flex-shrink-0"
+      ref="sideBar"
+      ></Sidebar>
 
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
         <router-view></router-view>
-         <!-- <AdminAnalytics></AdminAnalytics> -->
+          <!-- <AdminAnalytics></AdminAnalytics> -->
          <!-- <AdminUserTable></AdminUserTable> -->
-          <AdminChatContainer></AdminChatContainer>
+          <!-- <AdminChatContainer -->
+          <!-- @newChatAdded="updateTable()"></AdminChatContainer>  -->
       </section>
     </div>
   </div>
@@ -24,7 +27,7 @@
 <script>
 import { initWebSocket } from "@/services/websocket.service";
 import AdminAnalytics from "./AdminAnalytics.vue";
-import AdminTable from "./AdminUserTable.vue";
+import AdminUserTable from "./AdminUserTable.vue";
 import AdminChatTable from "./AdminChatTable.vue";
 import AdminAddConversation from "./AdminAddChat.vue";
 import AdminChatContainer from "./AdminChatContainer.vue";
@@ -54,6 +57,11 @@ export default {
       console.error("Error initializing WebSocket:", error);
       this.$router.push("/login"); // Redirect to login page
     }
+    }, 
+  methods : {
+    updateTable() {
+      this.$refs.sideBar.fetchChats()
     }
+  }
 }
 </script>

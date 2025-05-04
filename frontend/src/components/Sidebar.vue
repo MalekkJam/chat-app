@@ -9,7 +9,6 @@
 </template>
 <script>
 
-
    export default {
       data() {
          return {
@@ -17,9 +16,13 @@
          };
       },
       async mounted() {
-         const url = "http://localhost:3000";
 
-         fetch(url+"/getConversations",{
+         this.fetchChats() 
+      },
+      methods : {
+         fetchChats() {
+            const url = "http://localhost:3000";
+            fetch(url+"/getConversations",{
             method : "GET",
             mode : "cors",
             headers : {
@@ -31,8 +34,7 @@
                this.conversations = await response.json()
             
          })
-      },
-      methods : {
+         }, 
          changeConversation(conversation) {
             this.$router.push("/conversation/"+conversation) 
          }

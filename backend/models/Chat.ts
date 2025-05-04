@@ -51,7 +51,7 @@ export const get_All_chats = async () => {
 }
 
 export const get_chat_participants = async (chat_name : string) => {
-    const query = "SELECT User.username, User.email, User.joined_at FROM User INNER JOIN ChatParticipant ON User.user_id = ChatParticipant.user_id INNER JOIN Chat ON ChatParticipant.chat_id = Chat.chat_id WHERE Chat.chat_name = ?"
+    const query = "SELECT User.username, User.email, User.joined_at FROM User INNER JOIN ChatParticipant ON User.user_id = ChatParticipant.user_id INNER JOIN Chat ON ChatParticipant.chat_id = Chat.chat_id WHERE Chat.chat_name = ? AND User.username != 'admin'"
 
     try {
         const result = await db.prepare(query).all(chat_name) ; 

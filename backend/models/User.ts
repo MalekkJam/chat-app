@@ -140,12 +140,11 @@ export const find_password_by_username = async (username : string) : Promise<str
     }
 }
 
-export const delete_Account = async (username: string) => {
-    const query = "UPDATE User SET username = 'unknown', email = 'unknown' WHERE username = ?";
+export const delete_Account_From_User_Table = async (username: string) => {
+    const query = "DELETE FROM User WHERE username = ?";
     try {
         // Execute the DELETE query
         const result = await db.prepare(query).run(username); // Use .run() for DELETE queries
-        console.log("Account deleted successfully:", result);
         return result; // Return the result of the query
     } catch (error) {
         console.error("Error deleting account:", error);

@@ -14,6 +14,7 @@ export default {
     }, 
     methods : {
         updateData() {
+            this.$emit("newChatAdded")
             this.$refs.chatTable.updateTable() 
         }
     }

@@ -19,7 +19,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
       return;
     }
 
-    // 3. Extract username
+    // 3. Extract username 
     const { username } = ctx.response.body as { username: string };
 
     // 4. Proceed with WebSocket upgrade
@@ -43,7 +43,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
         if (type == "message") {
           const {conversation } = JSON.parse(event.data.toString())
           _addMessage(authSocket,action,conversation)
-          broadcastMessage(clients,action,conversation)
+          broadcastMessage(clients,authSocket.username,action,conversation)
         }
         else if (type === "request") {
               
@@ -55,13 +55,21 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                   const messages = await getMessages(conversation) 
                   // join the two tables to get a table containing usernames and messages
                   const fullMessages = await Promise.all(
-                    messages.map(async(message) => {
-                      const username = await find_username_by_id(message.sender_id)
-                      return {
-                        username : username[0].username , 
-                        content : message.content,
-                        date : message.timestamp
+                    messages.map(async (message) => {
+                      let username = "unknown";
+                      try {
+                        const result = await find_username_by_id(message.sender_id);
+                        if (result && result.length > 0) {
+                          username = result[0].username;
+                        }
+                      } catch (_error) {
+                        // Handle error silently, username remains "unknown"
                       }
+                      return {
+                        username: username,
+                        content: message.content,
+                        date: message.timestamp,
+                      };
                     })
                   );
                   socket.send(JSON.stringify({
@@ -106,8 +114,9 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
   }
 };
 
-export const broadcastMessage = (clients : Set<WebSocket>, message : string , conversation : string) => {
+export const broadcastMessage = (clients : Set<WebSocket>,username : string ,  message : string , conversation : string) => {
   const broadcastData  =JSON.stringify({
+    username: username, 
     type  : "broadcast",
     action : "newMessages",
     conversation : conversation,

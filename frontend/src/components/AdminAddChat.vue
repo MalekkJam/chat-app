@@ -59,9 +59,12 @@
   </template>
   
   <script>
-
-  import ErrorMessage from './ErrorMessage.vue'
+  import ErrorMessage from './ErrorMessage.vue';
+  
   export default {
+    components: {
+      ErrorMessage
+    },
     data() {
       return {
         newChat: {
@@ -69,34 +72,43 @@
           type: 'private'
         },
         url: "http://localhost:3000",
-        showErrorMessage : false , 
-        errorMessage : "",
+        showErrorMessage: false,
+        errorMessage: ""
       }
     },
     methods: {
       async createChat() {
-        fetch(this.url+"/addNewConversation",{
-            method : "POST",
-            mode : "cors",
+        try {
+          const response = await fetch(this.url + "/addNewConversation", {
+            method: "POST",
+            mode: "cors",
             headers: {
-            "Content-Type": "Application/json"
-            }, 
-            credentials: "include", 
-            body : JSON.stringify({newChat_name : this.newChat.name, newChat_type : this.newChat.type})
-        }).then(async (Response) => {
-            if (Response.status == 200) {
-              if (this.showErrorMessage) {
-                this.showErrorMessage = false 
-              }
-                this.$emit('newChatAdded')
-            }
-            else {
-              const data = await Response.json() 
-              this.showErrorMessage = true 
-              this.errorMessage = data.message
-              setTimeout(()=> {this.showErrorMessage = false},10000) 
-            }
-        })
+              "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              newChat_name: this.newChat.name,
+              newChat_type: this.newChat.type
+            })
+          });
+  
+          if (response.status === 200) {
+            this.showErrorMessage = false;
+            this.$emit('newChatAdded');
+            this.resetForm();
+          } else {
+            const data = await response.json();
+            this.showErrorMessage = true;
+            this.errorMessage = data.message;
+            setTimeout(() => {
+              this.showErrorMessage = false;
+            }, 10000);
+          }
+        } catch (error) {
+          console.error("Error creating chat:", error);
+          this.showErrorMessage = true;
+          this.errorMessage = "Failed to create chat";
+        }
       },
       cancelCreate() {
         this.resetForm();
@@ -107,6 +119,7 @@
           name: '',
           type: 'private'
         };
+        this.showErrorMessage = false 
       }
     }
   }

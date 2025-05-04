@@ -2,7 +2,7 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { jwtVerify } from "npm:jose@5.9.6/jwt/verify";
 import { get_Nb_Conversations , get_All_chats , get_chat_participants , get_chatID_by_chatName, add_chat} from "../models/Chat.ts";
 import { get_Nb_Users, get_all_users, get_Nb_new_users , find_userId_by_username} from "../models/User.ts";
-import {kick_user_from_chat , get_users_not_in_chat, add_user_to_chat, delete_chat_with_participants} from "../models/ChatParticipant.ts"
+import {kick_user_from_chat , get_users_not_in_chat, add_user_to_chat, delete_chat_with_participants , add_admin_to_new_chat} from "../models/ChatParticipant.ts"
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
@@ -288,8 +288,9 @@ export const addNewConversation = async (ctx : Context) => {
         }
         catch(error) {
             await add_chat(newChat_name,newChat_type) ; 
+            const chat_id = await get_chatID_by_chatName(newChat_name)
+            await add_admin_to_new_chat(chat_id) ; 
             ctx.response.status = 200 ; 
-            ctx.response.body = {message : "Deletion completed ! "}
         }
 
         
@@ -298,3 +299,4 @@ export const addNewConversation = async (ctx : Context) => {
         throw error 
     }
 }
+
