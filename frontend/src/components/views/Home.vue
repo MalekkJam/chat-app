@@ -14,7 +14,8 @@
 
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
-        <router-view></router-view>
+        <!-- <router-view></router-view> -->
+         <LandingPage></LandingPage>
           <!-- <AdminAnalytics></AdminAnalytics> -->
          <!-- <AdminUserTable></AdminUserTable> -->
           <!-- <AdminChatContainer -->
@@ -26,11 +27,6 @@
 
 <script>
 import { initWebSocket } from "@/services/websocket.service";
-import AdminAnalytics from "./AdminAnalytics.vue";
-import AdminUserTable from "./AdminUserTable.vue";
-import AdminChatTable from "./AdminChatTable.vue";
-import AdminAddConversation from "./AdminAddChat.vue";
-import AdminChatContainer from "./AdminChatContainer.vue";
 
 
 export default {

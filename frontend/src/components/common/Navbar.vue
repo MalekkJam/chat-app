@@ -4,7 +4,7 @@
       <!-- Logo Section -->
       <div class="flex flex-shrink md:w-1/3 justify-center md:justify-start text-white items-center">
         <a href="#" aria-label="Home" class="flex items-center space-x-2">
-          <img src="../assets/images/talksy.png" alt="Talksy Logo" class="h-8 w-8">
+          <img src="../../assets/images/talksy.png" alt="Talksy Logo" class="h-8 w-8">
           <span class="text-2xl font-semibold">Talksy</span>
         </a>
       </div>

@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import ErrorMessage from './ErrorMessage.vue';
 
 export default {
   data() {

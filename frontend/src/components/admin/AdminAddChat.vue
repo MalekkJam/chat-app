@@ -59,7 +59,7 @@
   </template>
   
   <script>
-  import ErrorMessage from './ErrorMessage.vue';
+  import ErrorMessage from '../common/ErrorMessage.vue';
   
   export default {
     components: {
