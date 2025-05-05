@@ -20,11 +20,11 @@
           </button>
           <div id="myDropdown" v-if="isMenuOpen" class="dropdownlist absolute bg-gray-800 text-white right-0 mt-3 p-3 overflow-auto z-30">
             <button @click="goToSettings()" class="p-2 hover:bg-gray-700 text-white text-sm no-underline hover:no-underline block">
-              <img src="../assets/images/settings.png" class="w-4 h-4 inline-block filter invert">
+              <img src="../../assets/images/settings.png" class="w-4 h-4 inline-block filter invert">
               Settings
             </button>
             <button @click="logout()" class="p-2 hover:bg-gray-700 text-white text-sm no-underline hover:no-underline block">
-              <img src="../assets/images/logout.png" class="w-4 h-4 inline-block filter invert">
+              <img src="../../assets/images/logout.png" class="w-4 h-4 inline-block filter invert">
               Log Out
             </button>
           </div>
