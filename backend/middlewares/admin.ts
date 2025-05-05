@@ -300,3 +300,29 @@ export const addNewConversation = async (ctx : Context) => {
     }
 }
 
+export const verifyAdminRole = async(ctx : Context) => {
+    try {const token = await ctx.cookies.get("auth_token") ; 
+
+        if (!token) {
+            ctx.response.status = 401 ; 
+            ctx.response.body = {message : "Not authorized"} ; 
+            return ; 
+        }
+    
+        const {payload} = await jwtVerify(token,secret) ; 
+        const role = payload.role as string
+    
+        if (role != "admin") {
+            ctx.response.status = 403 ; 
+            ctx.response.body = {message : "Not authorized you are not the admin"} ; 
+            return ; 
+        }
+        ctx.response.status = 200 
+    }
+    catch(error) {
+        console.error("Error while verifying admin role")
+        throw error 
+    }
+}
+
+

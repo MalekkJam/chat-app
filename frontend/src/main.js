@@ -17,7 +17,8 @@ import AdminUserTable from "./components/admin/AdminUserTable.vue";
 import AdminChatTable from "./components/admin/AdminChatTable.vue";
 import AdminAddConversation from "./components/admin/AdminAddChat.vue";
 import AdminChatContainer from "./components/admin/AdminChatContainer.vue";
-import LandingPage from "./components/user/LandingPage.vue";
+import LandingPage from "./components/common/LandingPage.vue";
+import AdminContainer from "./components/admin/AdminContainer.vue";
 
 const app = createApp(App);
 
@@ -38,6 +39,7 @@ app.component("AdminChatTable", AdminChatTable);
 app.component("AdminAddConversation", AdminAddConversation);
 app.component("AdminChatContainer", AdminChatContainer);
 app.component("LandingPage", LandingPage);
+app.component("AdminContainer", AdminContainer) ; 
 
 app.use(router);
 app.mount("#app");

@@ -19,7 +19,7 @@
           <img
             v-if="!message.isCurrentUser"
             class="w-8 h-8 rounded-full mt-1"
-            src="../assets/images/profile.png"
+            src="../../assets/images/profile.png"
             alt="User image"
           />
           
@@ -55,7 +55,7 @@
           <img
             v-if="message.isCurrentUser"
             class="w-8 h-8 rounded-full mt-1"
-            src="../assets/images/current-user.png"
+            src="../../assets/images/current-user.png"
             alt="Your profile"
           />
         </div>

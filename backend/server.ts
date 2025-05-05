@@ -3,7 +3,7 @@ import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import { registration , login, logout, verifyToken, getUsername, getUserInfo, updateUserData, deleteAccount} from "./middlewares/user.ts";
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 import { getConversations } from "./middlewares/chat.ts";
-import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation, addNewConversation}  from "./middlewares/admin.ts" ; 
+import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation, addNewConversation , verifyAdminRole}  from "./middlewares/admin.ts" ; 
  
 const router = new Router();
 const app = new Application();
@@ -17,6 +17,7 @@ router.post("/registration", registration);
 router.post("/login",login) ; 
 router.post("/logout",(ctx)=>logout(ctx,clients)) ; 
 router.post("/verifyToken",verifyToken) ; 
+router.post("/verifyAdminRole", verifyAdminRole)
 router.get("/getUsername",getUsername) ;
 router.get("/getConversations", getConversations);
 router.get("/getUserInfo", getUserInfo)

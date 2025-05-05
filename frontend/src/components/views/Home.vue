@@ -15,12 +15,7 @@
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
         <router-view>
-         <LandingPage></LandingPage>
         </router-view>
-          <!-- <AdminAnalytics></AdminAnalytics> -->
-         <!-- <AdminUserTable></AdminUserTable> -->
-          <!-- <AdminChatContainer -->
-          <!-- @newChatAdded="updateTable()"></AdminChatContainer>  -->
       </section>
     </div>
   </div>
@@ -47,7 +42,6 @@ export default {
           this.$router.push("/login"); 
         }
       })
-      
       // Check if the websocket exists if not will create a new one else it will redirect 
       await initWebSocket() ; 
     } catch (error) {
