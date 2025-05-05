@@ -42,7 +42,7 @@ export const delete_User_From_ChatParticipant = async (user_id : string) => {
     const query = "DELETE FROM ChatParticipant WHERE user_id = ?" 
 
     try {
-        const result = await db.prepare(query).all(user_id)
+        const result = await db.prepare(query).run(user_id)
         return result 
     }catch (error) {
         console.error("Error in deleting the user in the ChatParticipant")
@@ -55,8 +55,8 @@ export const delete_chat_with_participants = async (chat_id : string) => {
     const query2 =  "DELETE FROM Chat WHERE chat_id = ?"
 
     try {
-        await db.prepare(query1).all(chat_id) ; 
-        await db.prepare(query2).all(chat_id) ; 
+        await db.prepare(query1).run(chat_id) ; 
+        await db.prepare(query2).run(chat_id) ; 
         return true  
     }
     catch(error) {

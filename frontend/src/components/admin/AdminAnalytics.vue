@@ -76,7 +76,11 @@ export default {
         };
     },
     mounted() {
-        const url = "http://localhost:3000" ; 
+        this.fetchData()
+    },
+    methods : {
+        fetchData() {
+            const url = "http://localhost:3000" ; 
 
         fetch(url+"/getKpis",{
             mode:"get" ,
@@ -93,6 +97,7 @@ export default {
                 this.nbNewUsers = data.nbNewUsers ; 
             }
         })
+        }
     }
 }
 </script>

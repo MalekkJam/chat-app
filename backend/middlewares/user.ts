@@ -336,13 +336,9 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
         break;
       }
     }
-
  // Remove the cookie for the user
       ctx.cookies.delete("auth_token")
     }
-
-
-
 
    ctx.response.status = 200 
    ctx.response.body = {message : "Account deleted !"}

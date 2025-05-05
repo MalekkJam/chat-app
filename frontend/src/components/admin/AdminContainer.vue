@@ -1,12 +1,20 @@
 <template>
-    <AdminAnalytics></AdminAnalytics>
+    <AdminAnalytics ref="analytics"></AdminAnalytics>
     <AdminUserTable></AdminUserTable>
-    <AdminChatContainer></AdminChatContainer>
+    <AdminChatContainer @newChatAdded="updateAnalytics()"></AdminChatContainer>
 </template>
 
-<script setup lang="ts">
+<script>
 import AdminAnalytics from './AdminAnalytics.vue';
 import AdminChatContainer from './AdminChatContainer.vue';
 import AdminUserTable from './AdminUserTable.vue';
+
+export default {
+    methods : {
+        updateAnalytics() {
+            this.$refs.analytics.fetchData() ; 
+        }
+    }
+}
 
 </script>
