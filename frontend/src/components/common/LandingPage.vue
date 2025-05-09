@@ -22,7 +22,6 @@
 </template>
   
 <script>
-import AdminContainer from '../admin/AdminContainer.vue';
 
   export default {
     data() {

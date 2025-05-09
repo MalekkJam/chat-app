@@ -19,7 +19,7 @@
             </svg>
           </button>
           <div id="myDropdown" v-if="isMenuOpen" class="dropdownlist absolute bg-gray-800 text-white right-0 mt-3 p-3 overflow-auto z-30">
-            <button @click="goToSettings()" class="p-2 hover:bg-gray-700 text-white text-sm no-underline hover:no-underline block">
+            <button v-if="!isAdmin" @click="goToSettings()" class="p-2 hover:bg-gray-700 text-white text-sm no-underline hover:no-underline block">
               <img src="../../assets/images/settings.png" class="w-4 h-4 inline-block filter invert">
               Settings
             </button>
@@ -39,26 +39,31 @@ export default {
   data() {
     return {
       isMenuOpen: false,
+      isAdmin : false , 
       username: "",
     };
   },
   async mounted() {
-    const url = "http://localhost:3000"
-
-    fetch(url+"/getUsername",{
-            method : "GET",
-            mode : "cors",
-            headers : {
-            "Content-Type": "Application/json",
-          },credentials : "include"})
-          .then(async(response) => {
-            if (response.status == 302) {
-              const data = await response.json()
-              this.username = data.username
-            }
-          })
-  },
+      this.fetchUsername() 
+      this.verifyAdminRole()
+      }    , 
   methods: {
+    fetchUsername () {
+      const url = "http://localhost:3000"
+
+      fetch(url+"/getUsername",{
+              method : "GET",
+              mode : "cors",
+              headers : {
+              "Content-Type": "Application/json",
+            },credentials : "include"})
+            .then(async(response) => {
+              if (response.status == 302) {
+                const data = await response.json()
+                this.username = data.username
+              }
+            })
+    },
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
@@ -80,7 +85,23 @@ export default {
     goToSettings() {
       this.isMenuOpen = false
       this.$router.push("/settings")
-    }
+    }, 
+    verifyAdminRole() {
+        const url = "http://localhost:3000";
+
+        fetch(url+"/verifyAdminRole", {
+          method : "POST",
+          mode : "cors", 
+          headers : {
+          "Content-Type" : "Application/json"
+        }, 
+        credentials : "include" 
+        }).then((response) => {
+          if (response.status == 200) {
+            this.isAdmin = true ; 
+          }
+        })
+      }
   },
 };
 </script>

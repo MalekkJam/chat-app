@@ -4,7 +4,8 @@ import { registration , login, logout, verifyToken, getUsername, getUserInfo, up
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 import { getConversations } from "./middlewares/chat.ts";
 import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation, addNewConversation , verifyAdminRole}  from "./middlewares/admin.ts" ; 
- 
+import { addEmoji} from "./middlewares/message.ts" 
+
 const router = new Router();
 const app = new Application();
 const port = Deno.args[0] ? Number(Deno.args[0]) : 3000;
@@ -32,6 +33,7 @@ router.post("/getAvailableParticipants", getAvailableParticipants)
 router.post("/addUserToChat",addUserToChat) ; 
 router.delete("/deleteConversation",deleteConversation) ;
 router.post("/addNewConversation", addNewConversation) ; 
+router.post("/addEmoji",addEmoji)
 
 // WebSocket endpoint
 router.get("/ws", (ctx) => connectionUpgrade(clients, ctx));
