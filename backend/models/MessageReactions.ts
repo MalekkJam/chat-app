@@ -1,10 +1,10 @@
 import db from "../config/database.ts";
 
-export const setEmoji = (message_id : string ,user_id : string,emoji : string) => {
+export const setReaction = (message_id : string ,user_id : string,reaction : string) => {
     const query = "INSERT INTO MessageReactions(message_id,user_id,emoji) VALUES (?,?,?)"
 
     try {
-        const result = db.prepare(query).all(message_id,user_id,emoji)
+        const result = db.prepare(query).all(message_id,user_id,reaction)
         return result
     }
     catch (error) {

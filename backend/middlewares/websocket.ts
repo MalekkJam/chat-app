@@ -1,6 +1,6 @@
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getUsername } from "./user.ts";
-import { _addMessage } from "./message.ts";
+import { _addMessage , addReaction } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 import { getMessages } from "../models/Message.ts";
 import { find_username_by_id } from "../models/User.ts";
@@ -44,6 +44,10 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
           const {conversation } = JSON.parse(event.data.toString())
           _addMessage(authSocket,action,conversation)
           broadcastMessage(clients,authSocket.username,action,conversation)
+        }
+        else if (type =="reaction") {
+          const {message , reaction, conversation } = JSON.parse(event.data.toString()) ; 
+          addReaction(authSocket,message,reaction,conversation)  ; 
         }
         else if (type === "request") {
               

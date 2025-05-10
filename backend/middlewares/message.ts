@@ -4,7 +4,7 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import {find_userId_by_username} from"../models/User.ts" 
 import { addMessage, getMessageId, Message } from "../models/Message.ts";
 import { get_chatID_by_chatName } from "../models/Chat.ts";
-import { setEmoji } from "../models/MessageReactions.ts";
+import { setReaction } from "../models/MessageReactions.ts";
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
@@ -31,26 +31,11 @@ export const _addMessage = async (socket : AuthenticatedWebSocket ,message : str
     }
 } 
 
-export const addEmoji = async(ctx : Context) => {
+export const addReaction = async(authSocket : AuthenticatedWebSocket , message : string , reaction : string, conversation : string) => {
     
-    const token = await ctx.cookies.get("auth_token");
+    try {
         
-        if (!token) {
-          ctx.response.status = 401;
-          ctx.response.body = { message: "Unauthorized" };
-          return
-        }
-    
-        if (!token) {
-          ctx.response.status = 401;
-          ctx.response.body = { message: "Unauthorized" };
-          return;
-        }
-        const { payload } = await jwtVerify(token, secret);
-        const username = payload.username as string
-
-        const {emoji , message, conversation } = await ctx.request.body().value;
-
+        const username = authSocket.username ; 
         // get the user_id 
         const user_id = await find_userId_by_username(username) ; 
 
@@ -58,10 +43,12 @@ export const addEmoji = async(ctx : Context) => {
         const chat_id = await get_chatID_by_chatName(conversation) ; 
         // get the message id 
 
-        const message_id = await getMessageId(chat_id,user_id,message) ; 
+        const message_id = await getMessageId(chat_id,"1",message) ; 
 
         // set the emoji 
-    
-        setEmoji(message_id,user_id,emoji)
+        await setReaction(message_id,user_id,reaction)        
+    }catch(error) {
+        throw error 
+    }
     
 }
