@@ -1,0 +1,39 @@
+import db from "../config/database.ts";  
+
+export const sendRequest = (sender_id: string, target_id: string) => {
+    const query = "INSERT INTO RequestFriendship (sender_id, receiver_id, status) VALUES (?, ?, 'pending');";
+
+    try {
+        const result = db.prepare(query).run(sender_id, target_id); // Use .run() for INSERT
+        return result; // Return the result of the execution
+    } catch (error) {
+        console.error("Error while inserting in request friendship table:", error);
+        throw error;
+    }
+};
+
+export const _getNonFriendUsers = (username: string) => {
+    const query = `
+        SELECT u.username, u.email
+        FROM User u
+        WHERE u.username != ? -- Exclude the current user
+          AND u.user_id NOT IN (
+            SELECT CASE 
+                     WHEN r.sender_id = u1.user_id THEN r.receiver_id
+                     WHEN r.receiver_id = u1.user_id THEN r.sender_id
+                   END
+            FROM RequestFriendship r
+            JOIN User u1 ON u1.username = ? -- Find the user_id of the given username
+            WHERE (r.sender_id = u1.user_id OR r.receiver_id = u1.user_id)
+              AND r.status IN ('pending', 'accepted') -- Check only pending or accepted requests
+          );
+    `;
+
+    try {
+        const result = db.prepare(query).all(username, username);
+        return result;
+    } catch (error) {
+        console.error("Error while fetching non-friend users:", error);
+        throw error;
+    }
+};

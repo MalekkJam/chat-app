@@ -3,7 +3,8 @@ import { getUsername } from "./user.ts";
 import { _addMessage , addReaction } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 import { getMessages } from "../models/Message.ts";
-import { find_username_by_id } from "../models/User.ts";
+import { find_userId_by_username, find_username_by_id } from "../models/User.ts";
+import { sendRequest } from "../models/RequestFriendship.ts";
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -54,7 +55,6 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
           switch (action) {
      
               case "loadMessages": {
-                console.log("Loading messages")
                   const {conversation} = JSON.parse(event.data.toString())
                   const messages = await getMessages(conversation) 
                   // join the two tables to get a table containing usernames and messages
@@ -83,6 +83,21 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                     data : fullMessages
                   }))
                   break;
+              }
+              case "sendRequest": {
+                try {const { target } = JSON.parse(event.data.toString());
+                const sender_id = await find_userId_by_username(username) ; 
+                const target_id = await find_userId_by_username(target) ; 
+
+                const result = await sendRequest(sender_id,target_id) ; 
+                }
+                catch(_error) {}
+                socket.send(JSON.stringify({
+                    type : "response" , 
+                    action : "sendRequest", 
+                    status : 200,
+                  }))
+                break;
               }
 
       
