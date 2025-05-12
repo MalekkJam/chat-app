@@ -14,11 +14,6 @@ export const fetchFriendshipRequests = async (ctx : Context) =>  {
           return
         }
     
-        if (!token) {
-          ctx.response.status = 401;
-          ctx.response.body = { message: "Unauthorized" };
-          return;
-        }
         const { payload } = await jwtVerify(token, secret);
         const username = payload.username as string 
         const user_id = await find_userId_by_username(username) ; 

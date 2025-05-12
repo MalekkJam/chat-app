@@ -111,8 +111,19 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                      response.status == 200
                   ) {
                      this.fetchNonFriendUsers() ; 
+                  }else if (
+                     response.type == "response" && 
+                     response.action == "manageRequest" && 
+                     response.status == 200
+                  ){
+                     this.showPendingRequests()
                   }
+                  
                }
+
+
+
+               
          }, 
          showPendingRequests() {
              fetch(this.url+"/fetchFriendshipRequests",{
@@ -125,7 +136,6 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
             }).then(async (response) => {
                const data = await response.json() ; 
                this.otherUsers = data ; 
-               console.log(this.otherUsers);
                this.type = "manageRequest"; 
                this.showRequestModal = true ; 
              })

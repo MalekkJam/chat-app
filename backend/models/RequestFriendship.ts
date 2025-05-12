@@ -1,3 +1,4 @@
+
 import db from "../config/database.ts";  
 
 export const sendRequest = (sender_id: string, target_id: string) => {
@@ -40,7 +41,8 @@ export const _getNonFriendUsers = (username: string) => {
 
 export const getRequests = (user_id: string) => {
     const query = `
-        SELECT r.id, r.sender_id, r.receiver_id, r.status, u.username AS sender_username
+        SELECT r.id, r.sender_id, r.receiver_id, r.status, 
+               u.username AS username, u.email AS email
         FROM RequestFriendship r
         JOIN User u ON r.sender_id = u.user_id
         WHERE r.receiver_id = ? AND r.status = 'pending';
@@ -54,3 +56,15 @@ export const getRequests = (user_id: string) => {
         throw error;
     }
 };
+
+export const acceptRequest = (sender_id : string , target_id : string ) => {
+    const query = "UPDATE RequestFriendship SET status = 'accepted' WHERE sender_id = ? AND receiver_id = ? AND status = 'pending';"
+
+    try {
+        const result = db.prepare(query).run(sender_id,target_id) ; 
+        return result 
+    }catch (error) {
+        console.error("Error while accepting the invitation"); 
+        throw error 
+    }
+}

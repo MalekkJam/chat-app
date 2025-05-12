@@ -4,7 +4,8 @@ import { _addMessage , addReaction } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 import { getMessages } from "../models/Message.ts";
 import { find_userId_by_username, find_username_by_id } from "../models/User.ts";
-import { sendRequest } from "../models/RequestFriendship.ts";
+import { sendRequest , acceptRequest } from "../models/RequestFriendship.ts";
+import {addFriendship} from "../models/Frienship.ts"
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -89,7 +90,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                 const sender_id = await find_userId_by_username(username) ; 
                 const target_id = await find_userId_by_username(target) ; 
 
-                const result = await sendRequest(sender_id,target_id) ; 
+                await sendRequest(sender_id,target_id) ; 
                 }
                 catch(_error) {}
                 socket.send(JSON.stringify({
@@ -98,6 +99,24 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                     status : 200,
                   }))
                 break;
+              }
+
+              case  "manageRequest" : {
+                try {
+                  const { target } = JSON.parse(event.data.toString());
+                  const target_id = await find_userId_by_username(username) ; 
+                  const sender_id = await find_userId_by_username(target) ;  
+
+                  await acceptRequest(sender_id,target_id) ; 
+                  await addFriendship(sender_id,target_id) ; 
+                }catch (error) {/* Silently managing the errors */}
+
+                socket.send(JSON.stringify({
+                  type : "response" , 
+                  action : "manageRequest" , 
+                  status : 200 
+                }))
+                break ; 
               }
 
       
