@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import ErrorMessage from './ErrorMessage.vue';
-import SuccessMessage from './SuccessMessage.vue';
+import ErrorMessage from '../common/ErrorMessage.vue';
+import SuccessMessage from '../common/SuccessMessage.vue';
 
 export default {
     components : {

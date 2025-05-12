@@ -31,3 +31,15 @@ export const getMessages = async(conversation : string ) => {
         throw (error)
     }
 }
+
+export const getMessageId = async (chat_id: string, sender_id : string, content : string ) => {
+    const query = "SELECT message_id FROM Message WHERE chat_id = ? AND sender_id = ? AND content = ?"
+    try {
+        const result = await db.prepare(query).all(chat_id,sender_id,content) as {message_id : string } [] 
+        return result[0].message_id
+    }
+    catch (error) {
+        console.error("Error while trying to fetch the message") 
+        throw error 
+    }
+}

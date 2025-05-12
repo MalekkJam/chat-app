@@ -8,13 +8,14 @@
     <!-- Main content area -->
     <div class="flex flex-1">
       <!-- Sidebar on the left -->
-      <Sidebar class="w-64 flex-shrink-0"></Sidebar>
+      <Sidebar class="w-64 flex-shrink-0"
+      ref="sideBar"
+      ></Sidebar>
 
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
-        <!-- <router-view></router-view> -->
-         <!-- <AdminAnalytics></AdminAnalytics> -->
-         <AdminTable></AdminTable>
+        <router-view>
+        </router-view>
       </section>
     </div>
   </div>
@@ -22,8 +23,6 @@
 
 <script>
 import { initWebSocket } from "@/services/websocket.service";
-import AdminAnalytics from "./AdminAnalytics.vue";
-import AdminTable from "./AdminTable.vue";
 
 
 export default {
@@ -43,13 +42,17 @@ export default {
           this.$router.push("/login"); 
         }
       })
-      
       // Check if the websocket exists if not will create a new one else it will redirect 
       await initWebSocket() ; 
     } catch (error) {
       console.error("Error initializing WebSocket:", error);
       this.$router.push("/login"); // Redirect to login page
     }
+    }, 
+  methods : {
+    updateTable() {
+      this.$refs.sideBar.fetchChats()
     }
+  }
 }
 </script>

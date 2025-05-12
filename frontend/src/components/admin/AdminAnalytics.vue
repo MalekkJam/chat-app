@@ -55,7 +55,7 @@
                 </div>
                 <div class="flex-1 text-right md:text-center">
                     <h2 class="font-bold uppercase text-gray-600">New Users</h2>
-                    <p class="font-bold text-3xl">2 <span class="text-yellow-600"><i class="fas fa-caret-up"></i></span></p>
+                    <p class="font-bold text-3xl text-black">{{ nbNewUsers ?? 'Loading...' }}</p>
                 </div>
             </div>
         </div>
@@ -76,7 +76,11 @@ export default {
         };
     },
     mounted() {
-        const url = "http://localhost:3000" ; 
+        this.fetchData()
+    },
+    methods : {
+        fetchData() {
+            const url = "http://localhost:3000" ; 
 
         fetch(url+"/getKpis",{
             mode:"get" ,
@@ -90,8 +94,10 @@ export default {
                 const data = await response.json() ; 
                 this.nbConversations = data.nbConversations ; 
                 this.nbTotalUsers = data.nbTotalUsers ; 
+                this.nbNewUsers = data.nbNewUsers ; 
             }
         })
+        }
     }
 }
 </script>
