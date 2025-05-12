@@ -1,9 +1,10 @@
 import { createWebHistory, createRouter } from 'vue-router';  // Import createWebHistory
-import Home from "@/components/Home.vue";
-import Login from "@/components/Login.vue";
-import Register from '@/components/Register.vue';
-import Conversation from '@/components/Conversation.vue';
-import Settings from '@/components/Settings.vue'
+import Home from "@/components/views/Home.vue";
+import Login from "@/components/auth/Login.vue";
+import Register from '@/components/auth/Register.vue';
+import Conversation from '@/components/common/Conversation.vue';
+import Settings from '@/components/user/Settings.vue'
+import LandingPage from '@/components/common/LandingPage.vue';
 
 import type { RouteRecordRaw } from 'vue-router';
 
@@ -12,6 +13,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', component: Register },
   { path : '/', component : Home , 
     children : [
+      { path : '', component : LandingPage } , 
       { path : '/conversation/:conversation', component : Conversation},
       { path : '/settings', component : Settings}
     ]
