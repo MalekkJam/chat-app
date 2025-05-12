@@ -7,7 +7,7 @@ try {
   console.log("Connected to SQLite database successfully!");
 } catch (err) {
   console.error("Error connecting to SQLite database:", err);
-  db = null as any; // Ensure db is defined to prevent runtime errors
+  db = null as any;
 }
 
 export default db;
