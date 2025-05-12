@@ -1,12 +1,12 @@
 import db from "../config/database.ts";
 import { find_userId_by_username } from "./User.ts";
 
-export const _getConversations = async (username : string) : Promise<string[]> => {
-    const query = "SELECT chat_name FROM Chat, ChatParticipant WHERE Chat.chat_id = ChatParticipant.chat_id AND ChatParticipant.user_id = ?" ; 
+export const _getConversations = async (username : string, chat_type : string) : Promise<string[]> => {
+    const query = "SELECT chat_name FROM Chat, ChatParticipant WHERE Chat.chat_id = ChatParticipant.chat_id AND ChatParticipant.user_id = ? AND Chat.chat_type = ?" ; 
     
     try {
         const user_id = await find_userId_by_username(username) ; 
-        const result = await db.prepare(query).all(user_id) as { chat_name: string }[]; ; 
+        const result = await db.prepare(query).all(user_id,chat_type) as { chat_name: string }[]; ; 
         return result.map(row => row.chat_name);
     } 
     catch (error) {
@@ -39,7 +39,7 @@ export const get_Nb_Conversations = async () => {
 }
 
 export const get_All_chats = async () => {
-    const query = "SELECT chat_name, chat_type, created_at FROM Chat"
+    const query = "SELECT chat_name, chat_type, created_at FROM Chat WHERE chat_type = 'group'"
 
     try {
         const result = await db.prepare(query).all()  ; 
