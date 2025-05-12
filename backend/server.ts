@@ -4,6 +4,7 @@ import { registration , login, logout, verifyToken, getUsername, getUserInfo, up
 import { connectionUpgrade } from "./middlewares/websocket.ts";
 import { getConversations } from "./middlewares/chat.ts";
 import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromChat , getAvailableParticipants , addUserToChat, deleteConversation, addNewConversation , verifyAdminRole}  from "./middlewares/admin.ts" ; 
+import { fetchFriendshipRequests } from "./middlewares/requestFriendship.ts";
 
 const router = new Router();
 const app = new Application();
@@ -33,6 +34,7 @@ router.post("/addUserToChat",addUserToChat) ;
 router.delete("/deleteConversation",deleteConversation) ;
 router.post("/addNewConversation", addNewConversation) ; 
 router.get("/fetchNonFriendUsers", getNonFriendUsers) ; 
+router.get("/fetchFriendshipRequests", fetchFriendshipRequests) ; 
 
 
 // WebSocket endpoint

@@ -37,3 +37,20 @@ export const _getNonFriendUsers = (username: string) => {
         throw error;
     }
 };
+
+export const getRequests = (user_id: string) => {
+    const query = `
+        SELECT r.id, r.sender_id, r.receiver_id, r.status, u.username AS sender_username
+        FROM RequestFriendship r
+        JOIN User u ON r.sender_id = u.user_id
+        WHERE r.receiver_id = ? AND r.status = 'pending';
+    `;
+
+    try {
+        const result = db.prepare(query).all(user_id);
+        return result;
+    } catch (error) {
+        console.error("Error while fetching friend requests:", error);
+        throw error;
+    }
+};

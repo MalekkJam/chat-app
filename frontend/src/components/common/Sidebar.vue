@@ -114,7 +114,7 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                   }
                }
          }, 
-         showPendingRequestst() {
+         showPendingRequests() {
              fetch(this.url+"/fetchFriendshipRequests",{
                method : "GET",
                mode : "cors" , 
@@ -125,6 +125,7 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
             }).then(async (response) => {
                const data = await response.json() ; 
                this.otherUsers = data ; 
+               console.log(this.otherUsers);
                this.type = "manageRequest"; 
                this.showRequestModal = true ; 
              })
