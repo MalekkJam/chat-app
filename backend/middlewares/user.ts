@@ -1,11 +1,8 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account_From_User_Table, test_data_authenticity , find_userId_by_username , get_all_users} from "../models/User.ts";
-import { delete_User_From_ChatParticipant } from "../models/ChatParticipant.ts"
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account, test_data_authenticity} from "../models/User.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
-import { get_All_chats } from "../models/Chat.ts";
-import { _getNonFriendUsers } from "../models/RequestFriendship.ts";
 
 // JWT Secret
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
@@ -39,7 +36,7 @@ export const registration = async (ctx : Context) => {
     // Add a unicity username and email tests 
     const test_username = await test_data_authenticity("username",username) ; 
 
-    if (test_username || username == "admin") {
+    if (test_username ) {
       ctx.response.status = 400 ; 
       ctx.response.body = {message : "Username already used choose another one"}
       return 
@@ -317,18 +314,11 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
       return 
     }
     const {payload} = await jwtVerify(token,secret)
-    const username = payload.username as string;
-    if (username === "admin") { // The admin will himself delete the user 
-      const { username } = await ctx.request.body().value;
-      const user_id = await find_userId_by_username(username) 
-      await delete_User_From_ChatParticipant(user_id) ; 
-      await delete_Account_From_User_Table(username) ; 
-    }else { // the user deletes his account from the settings page 
-      const user_id = await find_userId_by_username(username) 
-      await delete_User_From_ChatParticipant(user_id) ; 
-      await delete_Account_From_User_Table(username) ; 
+    const username = payload.username as string
+    await delete_Account(username) ; 
+   ctx.cookies.delete("auth_token")
 
-          // Close the WebSocket connection for the user
+    // Close the WebSocket connection for the user
     for (const client of clients) {
       const authSocket = client as AuthenticatedWebSocket;
       if (authSocket.username === username) {
@@ -338,9 +328,6 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
         break;
       }
     }
- // Remove the cookie for the user
-      ctx.cookies.delete("auth_token")
-    }
 
    ctx.response.status = 200 
    ctx.response.body = {message : "Account deleted !"}
@@ -348,33 +335,5 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
   }catch (error) {
     ctx.response.status = 500 
     ctx.response.body = {message : "Internal server error"}
-    throw error 
-  }
-}
-
-export const getNonFriendUsers = async (ctx:Context) => {
-  try {
-    const token = await ctx.cookies.get("auth_token");
-    
-    if (!token) {
-      ctx.response.status = 401;
-      ctx.response.body = { message: "Unauthorized" };
-      return
-    }
-
-    if (!token) {
-      ctx.response.status = 401;
-      ctx.response.body = { message: "Unauthorized" };
-      return;
-    }
-    const { payload } = await jwtVerify(token, secret);
-    const username = payload.username as string 
-
-   const result = await _getNonFriendUsers(username);
-   
-   ctx.response.status = 200;
-    ctx.response.body = result;
-  }catch (error) {
-    throw error 
   }
 }

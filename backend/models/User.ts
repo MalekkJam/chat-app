@@ -1,4 +1,7 @@
+import { userInfo } from "node:os";
 import db from "../config/database.ts";
+import test from "node:test";
+import { copyBytes } from "https://deno.land/x/oak@v12.6.1/deps.ts";
 
 export interface User {
     username : string;
@@ -92,7 +95,7 @@ export const find_info_by_username = (username : string) => {
 
 export const update_User_Data = async(category : string, username : string ,new_value : string) => {
     // Test username and returns true if it exists already 
-    let test_data = false; 
+    var test_data = false ; 
     console.log("Hola hla")
     console.log("my type is ",category)
     if (category == "username") {
@@ -137,11 +140,12 @@ export const find_password_by_username = async (username : string) : Promise<str
     }
 }
 
-export const delete_Account_From_User_Table = async (username: string) => {
-    const query = "DELETE FROM User WHERE username = ?";
+export const delete_Account = async (username: string) => {
+    const query = "UPDATE User SET username = 'unknown', email = 'unknown' WHERE username = ?";
     try {
         // Execute the DELETE query
-        const result = await db.prepare(query).run(username); 
+        const result = await db.prepare(query).run(username); // Use .run() for DELETE queries
+        console.log("Account deleted successfully:", result);
         return result; // Return the result of the query
     } catch (error) {
         console.error("Error deleting account:", error);
@@ -153,7 +157,7 @@ export const get_Nb_Users = async () => {
     const query = "SELECT COUNT(*) as nbTotalUsers FROM User"
 
     try {
-        const result = await db.prepare(query).all() as {nbTotalUsers : number} [] ;  
+        const result = db.prepare(query).all() as {nbTotalUsers : number} [] ;  
         return result[0].nbTotalUsers ; 
     }
     catch(error) {
@@ -169,19 +173,6 @@ export const get_all_users = async() => {
         return result ; 
     }catch (error) {
         console.error("error while getting all the users") ; 
-        throw error ; 
-    }
-}
-
-export const get_Nb_new_users = () => {
-    const query = "SELECT COUNT(*) as nbNewUsers FROM User WHERE DATE(joined_at) = DATE('now')" ; 
-
-    try {
-        const result = db.prepare(query).all() as {nbNewUsers : number} []; 
-        return result[0].nbNewUsers ; 
-    }
-    catch(error) {
-        console.log("error while counting the number of the new users") ; 
         throw error ; 
     }
 }
