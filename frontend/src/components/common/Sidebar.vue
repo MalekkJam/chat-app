@@ -9,7 +9,7 @@
         Send Friend Request
       </button>
       <button 
-        @click="showPendingRequests"
+        @click="fetchFriendRequests"
         class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors"
       >
         Friend Requests
@@ -17,6 +17,10 @@
     </div>
 
     <!-- Existing Conversations List -->
+      <div class="border-b border-gray-700">
+      <h3 class="text-gray-400 uppercase text-xs font-semibold px-4 py-2">
+        Rooms
+      </h3>
     <ul>
       <li 
         @click="changeConversation(conversation)" 
@@ -27,6 +31,24 @@
         {{ conversation }}
       </li>
     </ul>
+    </div>
+    <div>
+      <h3 class="text-gray-400 uppercase text-xs font-semibold px-4 py-2">
+        My Friends
+      </h3>
+      <ul>
+        <li 
+          @click="openPrivateChat(friend)"
+          class="text-white p-4 hover:bg-gray-700 cursor-pointer transition-colors flex items-center"
+          v-for="friend in friendsList"
+          :key="friend.user_id"
+        >
+          <span class="w-2 h-2 rounded-full bg-green-500 mr-2" v-if="friend.is_online"></span>
+          <span class="w-2 h-2 rounded-full bg-gray-500 mr-2" v-else></span>
+          {{ friend.username }}
+        </li>
+      </ul>
+    </div>
   </nav>
 <FriendPopup
   :isOpen="showRequestModal"
@@ -59,7 +81,7 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
       },
       methods : {
          fetchChats() {
-            fetch(this.url+"/getConversations",{
+            fetch(this.url+"/getGroupConversations",{
             method : "GET",
             mode : "cors",
             headers : {
@@ -95,7 +117,6 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
          }, 
          async handleAccept(type,username) {
                const socket = await initWebSocket() ; 
-               console.log(type,username);
                const request = {
                   type : "request" , 
                   action : type ,
@@ -116,16 +137,33 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                      response.action == "manageRequest" && 
                      response.status == 200
                   ){
-                     this.showPendingRequests()
+                     this.fetchFriendRequests()
                   }
                   
-               }
-
-
-
-               
+               }             
          }, 
-         showPendingRequests() {
+         async handleReject(username) {
+            const socket = await initWebSocket() ; 
+               const request = {
+                  type : "request" , 
+                  action : "rejectRequest" ,
+                  sender : username
+               }
+               
+               sendMessage(JSON.stringify(request)) ; 
+
+               socket.onmessage = (event) => {
+                  const response = JSON.parse(event.data) ; 
+                  if (response.type == "response" && 
+                     response.action == "rejectRequest" && 
+                     response.status == 200 
+                  ) {
+                     this.fetchFriendRequests()
+                  }
+            
+               }
+         },
+         fetchFriendRequests() {
              fetch(this.url+"/fetchFriendshipRequests",{
                method : "GET",
                mode : "cors" , 

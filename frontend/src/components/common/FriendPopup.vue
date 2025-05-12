@@ -91,7 +91,7 @@ export default {
       this.$emit('accept', this.type, username);
     },
     rejectRequest(username) {
-      this.$emit('reject', this.type,  username);
+      this.$emit('reject', username);
     }
   }
 }

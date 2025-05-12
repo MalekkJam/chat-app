@@ -5,7 +5,7 @@ import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
-export const getConversations = async (ctx : Context) => {
+export const getGroupConversations = async (ctx : Context) => {
   try {
     const token = await ctx.cookies.get("auth_token");
     
@@ -18,7 +18,7 @@ export const getConversations = async (ctx : Context) => {
     const {payload} = await jwtVerify(token,secret) ; 
     const username = payload.username as string
 
-    const result = await _getConversations(username) ; 
+    const result = await _getConversations(username,"group") ; 
     ctx.response.status = 200 ; 
     ctx.response.body = result ; 
 
