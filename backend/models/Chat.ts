@@ -80,8 +80,9 @@ export const add_chat = async(chat_name : string , chat_type : string) => {
     const query = "INSERT INTO Chat(chat_name,chat_type) VALUES (?,?)"
 
     try {
-        const result = await db.prepare(query).all(chat_name,chat_type)
-        return result
+        await db.prepare(query).all(chat_name,chat_type)
+        const result = db.prepare("SELECT LAST_INSERT_ROWID() AS id;").get() as { id: string };
+        return result.id; 
     }catch (error) {
         console.error("Error while adding chat to db")
         throw error 

@@ -6,6 +6,9 @@ import { getMessages } from "../models/Message.ts";
 import { find_userId_by_username, find_username_by_id } from "../models/User.ts";
 import { sendRequest , acceptRequest } from "../models/RequestFriendship.ts";
 import {addFriendship} from "../models/Frienship.ts"
+import { add_chat } from "../models/Chat.ts";
+import { addUserToChat } from "./admin.ts";
+import { add_user_to_chat } from "../models/ChatParticipant.ts";
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -109,6 +112,9 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
 
                   await acceptRequest(sender_id,target_id) ; 
                   await addFriendship(sender_id,target_id) ; 
+                  const newChatId = await add_chat("conversation","private") ; 
+                  await add_user_to_chat(newChatId,target_id) ; 
+                  await add_user_to_chat(newChatId,sender_id) ; 
                 }catch (error) {/* Silently managing the errors */}
 
                 socket.send(JSON.stringify({

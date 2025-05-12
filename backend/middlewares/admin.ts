@@ -287,7 +287,7 @@ export const addNewConversation = async (ctx : Context) => {
             return
         }
         catch(error) {
-            await add_chat(newChat_name,newChat_type) ; 
+            const result = await add_chat(newChat_name,newChat_type) ; 
             const chat_id = await get_chatID_by_chatName(newChat_name)
             await add_admin_to_new_chat(chat_id) ; 
             ctx.response.status = 200 ; 
