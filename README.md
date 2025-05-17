@@ -1,4 +1,4 @@
-# 🗨️ Chat App
+# 🗨️ Talksy
 
 ## 📌 Project Overview
 Chat App is a real-time messaging application where users can **sign up, log in, and send messages** to their friends. It supports both **private chats** and **group chats**. The app also includes features like **friend requests**, **user management**, and **admin controls**. The project is built using **Vue.js** for the frontend and **Deno** for the backend, with **SQLite** as the database.
