@@ -36,18 +36,16 @@
       <h3 class="text-gray-400 uppercase text-xs font-semibold px-4 py-2">
         My Friends
       </h3>
-      <ul>
-        <li 
-          @click="openPrivateChat(friend)"
-          class="text-white p-4 hover:bg-gray-700 cursor-pointer transition-colors flex items-center"
-          v-for="friend in friendsList"
-          :key="friend.user_id"
-        >
-          <span class="w-2 h-2 rounded-full bg-green-500 mr-2" v-if="friend.is_online"></span>
-          <span class="w-2 h-2 rounded-full bg-gray-500 mr-2" v-else></span>
-          {{ friend.username }}
-        </li>
-      </ul>
+        <ul>
+    <li 
+      v-for="friend in friendsList"
+      @click="changeConversation(friend.username)"
+      class="text-white p-4 hover:bg-gray-700 cursor-pointer transition-colors"
+      :key="friend"
+    >
+      {{ friend.username }}
+    </li>
+  </ul>
     </div>
   </nav>
 <FriendPopup
@@ -74,10 +72,12 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
             type :"",
             url : "http://localhost:3000",
             showRequestModal : false , 
+            friendsList : [], 
          };
       },
       async mounted() {
          this.fetchChats() 
+         this.fetchFriends()
       },
       methods : {
          fetchChats() {
@@ -95,7 +95,14 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
          })
          }, 
          changeConversation(conversation) {
-            this.$router.push("/conversation/"+conversation) 
+            const isGroupChat = this.conversations.includes(conversation);
+            
+            if (isGroupChat) {
+               this.$router.push("/group/" + conversation);
+            } else {
+               this.$router.push("/private/" + conversation);
+            }
+
          }, 
          fetchNonFriendUsers() {
             fetch(this.url+"/fetchNonFriendUsers",{
@@ -177,9 +184,23 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                this.type = "manageRequest"; 
                this.showRequestModal = true ; 
              })
+         }, 
+         fetchFriends() {
+            fetch(this.url +"/getMyFriends", {
+               method :"GET" , 
+               mode : "cors" , 
+               headers : {
+                  "Content-Type" : "Application/json"
+               }, 
+               credentials :"include"
+            }).then(async (response) => {
+               const data = await response.json() 
+               this.friendsList = data
+               console.log(this.friendsList);
+            })
          }
       }
    }
 
 
-</script>
+</script>   

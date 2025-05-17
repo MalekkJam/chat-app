@@ -88,3 +88,22 @@ export const add_chat = async(chat_name : string , chat_type : string) => {
         throw error 
     }
 }
+
+export const get_private_chatid = async (my_id : string ,friend_id : string) => {
+     const query = `
+        SELECT cp.chat_id
+        FROM ChatParticipant cp
+        JOIN Chat c ON cp.chat_id = c.chat_id
+        WHERE c.chat_type = 'private'
+          AND cp.user_id IN (?, ?)
+        GROUP BY cp.chat_id
+        HAVING COUNT(DISTINCT cp.user_id) = 2
+    `;
+    try {
+        const result = await db.prepare(query).all(my_id, friend_id) as { chat_id: string }[];
+        return result.length > 0 ? result[0].chat_id : null;
+    } catch (error) {
+        console.error("Error fetching private chat id");
+        throw error;
+    }
+} 

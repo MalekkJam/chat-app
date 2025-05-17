@@ -1,7 +1,6 @@
-import { error } from "node:console";
 import { _getConversations } from "../models/Chat.ts";
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
+import { jwtVerify } from "npm:jose@5.9.6";
 
 const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
 
