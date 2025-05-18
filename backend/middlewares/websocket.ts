@@ -49,7 +49,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
       // Convert the websocket to authWebsocket interface to associate with each websocket the username 
       const authSocket = socket as AuthenticatedWebSocket;
 
-        switch (type) {
+      switch (type) {
         case "message" : { 
           // Adding a message to the DB
           const {conversation , chatType} = JSON.parse(event.data.toString())
@@ -89,12 +89,12 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
           addReaction(authSocket,message,reaction,conversation)  ; 
           break;
         }
-        case "request " : {
-              
+        case "request" : {
           switch (action) {
      
               case "loadMessages": {
                   const {conversation , chatType} = JSON.parse(event.data.toString())
+                  console.log("here");
                   let chat_id
                   if (chatType == "private" ) {
                      // Searching for the chat id at first 
@@ -102,12 +102,15 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                     const friend_id = await find_userId_by_username(conversation) 
 
                     chat_id = await get_private_chatid(my_id,friend_id)
+                    console.log("private chat id :",chat_id);
                   }
                   else {
                     chat_id = await get_chatID_by_chatName(conversation) ; 
                   }
 
                     const messages = await getMessages(chat_id!) 
+
+                    console.log("the messages : ",messages);
                     // join the two tables to get a table containing usernames and messages
                     const fullMessages = await Promise.all(
                       messages.map(async (message) => {
@@ -256,8 +259,6 @@ export const broadcastPrivateMessage = (
     data: messageContent
   });
 
-  console.log("sender data ",senderData);
-
   // Send to sender
   if (senderSocket.readyState === WebSocket.OPEN) {
     senderSocket.send(senderData);
@@ -272,7 +273,6 @@ export const broadcastPrivateMessage = (
     data: messageContent
   });
 
-  console.log("receiver data ",receiverData );
   // Find and send to receiver
   for (const client of clients) {
     const authClient = client as AuthenticatedWebSocket;

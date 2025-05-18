@@ -190,6 +190,7 @@ export default {
               conversation: this.activeConversation,
               chatType : this.chatType
           };
+
          sendMessage(JSON.stringify(request));
 
          socket.onmessage = (event) => {
