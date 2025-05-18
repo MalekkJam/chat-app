@@ -1,1 +1,1 @@
-delete from friendship where user_id1 = 1 
+delete from message where chat_id = 27

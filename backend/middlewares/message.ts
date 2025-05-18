@@ -21,6 +21,7 @@ export const _addMessage = async (socket : AuthenticatedWebSocket ,message : str
             timestamp: new Date()
         };
 
+
         await addMessage(_message) 
 
     }

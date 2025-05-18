@@ -194,6 +194,7 @@ export default {
 
          socket.onmessage = (event) => {
             const response = JSON.parse(event.data);
+            console.log(response);
             if (
                response.type === "response" &&
                response.action === "loadMessages" &&
@@ -219,9 +220,9 @@ export default {
          }
       },
       _sendMessage() {
-        console.log(this.message_tosend);
+        console.log("active conv name ", this.activeConversation);
          if (this.message_tosend.trim() !== "") {
-           const request = {  type : "message"  , action: this.message_tosend , conversation : this.activeConversation};
+           const request = {  type : "message"  , action: this.message_tosend , conversation : this.activeConversation , chatType : this.chatType};
             sendMessage(JSON.stringify(request));
             this.message_tosend = ""; 
          }

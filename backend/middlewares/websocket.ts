@@ -2,12 +2,13 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getUsername } from "./user.ts";
 import { _addMessage , addReaction } from "./message.ts";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
-import { getMessages } from "../models/Message.ts";
+import { addMessage, getMessages, Message } from "../models/Message.ts";
 import { find_userId_by_username, find_username_by_id } from "../models/User.ts";
 import { sendRequest , acceptRequest , rejectRequest} from "../models/RequestFriendship.ts";
 import {addFriendship} from "../models/Frienship.ts"
 import { add_chat , get_private_chatid, get_chatID_by_chatName } from "../models/Chat.ts";
 import { add_user_to_chat } from "../models/ChatParticipant.ts";
+import { UserAgent } from "https://deno.land/x/oak@v12.6.1/deps.ts";
 
 export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) => {
   if (!ctx.isUpgradable) return;
@@ -42,28 +43,53 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
 
     socket.onmessage = async (event) => {
 
+      // Get the type and the action before anything 
       const { type,action } = JSON.parse(event.data.toString()); 
+
+      // Convert the websocket to authWebsocket interface to associate with each websocket the username 
       const authSocket = socket as AuthenticatedWebSocket;
-        if (type == "message") {
+
+        switch (type) {
+        case "message" : { 
+          // Adding a message to the DB
           const {conversation , chatType} = JSON.parse(event.data.toString())
-          let chat_id
+          let _chat_id;
           if (chatType == "private" ) {
-              // Searching for the chat id at first 
+            // Searching for the chat id at first 
             const my_id =  await find_userId_by_username(username) 
             const friend_id = await find_userId_by_username(conversation) 
+            _chat_id = await get_private_chatid(my_id,friend_id)
 
-            chat_id = await get_private_chatid(my_id,friend_id)
+            // No need for the message middleware because we already have all the data 
+            const message : Message =  {
+              chat_id : Number(_chat_id) , 
+              sender_id : Number(my_id) , 
+              content : action , 
+              timestamp : new Date() 
+            } ; 
+
+
+            await addMessage(message)
+             broadcastPrivateMessage(
+              clients,
+              socket,
+              username,
+              conversation,
+              action
+            );
           }
           else {
             _addMessage(authSocket,action,conversation)
+            broadcastGroupMessage(clients,authSocket.username,action,conversation)
           }
-          broadcastMessage(clients,authSocket.username,action,conversation)
+          break;
         }
-        else if (type =="reaction") {
+        case "reaction" :  {
           const {message , reaction, conversation } = JSON.parse(event.data.toString()) ; 
           addReaction(authSocket,message,reaction,conversation)  ; 
+          break;
         }
-        else if (type === "request") {
+        case "request " : {
               
           switch (action) {
      
@@ -140,7 +166,6 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                   await add_user_to_chat(newChatId,target_id) ; 
                   await add_user_to_chat(newChatId,sender_id) ; 
                 }catch (error) {/* Silently managing the errors */}
-                console.log("here");
                 socket.send(JSON.stringify({
                   type : "response" , 
                   action : "manageRequest" , 
@@ -176,7 +201,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
 
           }
       }
-             
+    }   
 
     };
 
@@ -197,7 +222,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
   }
 };
 
-export const broadcastMessage = (clients : Set<WebSocket>,username : string ,  message : string , conversation : string) => {
+export const broadcastGroupMessage = (clients : Set<WebSocket>,username : string ,  message : string , conversation : string) => {
   const broadcastData  =JSON.stringify({
     username: username, 
     type  : "broadcast",
@@ -206,6 +231,7 @@ export const broadcastMessage = (clients : Set<WebSocket>,username : string ,  m
     data : message
   }); 
 
+
   for (const client of clients) {
     if(client.readyState === WebSocket.OPEN) {
       client.send(broadcastData)
@@ -213,3 +239,45 @@ export const broadcastMessage = (clients : Set<WebSocket>,username : string ,  m
   }
 }
 
+// Add this function to your websocket.ts
+export const broadcastPrivateMessage = (
+  clients: Set<WebSocket>,
+  senderSocket: WebSocket,
+  senderUsername: string,
+  receiverUsername: string,
+  messageContent: string
+) => {
+  // Prepare message for sender (conversation shows receiver's username)
+  const senderData = JSON.stringify({
+    username: senderUsername,
+    type: "broadcast",
+    action: "newMessages",
+    conversation: receiverUsername,
+    data: messageContent
+  });
+
+  console.log("sender data ",senderData);
+
+  // Send to sender
+  if (senderSocket.readyState === WebSocket.OPEN) {
+    senderSocket.send(senderData);
+  }
+
+  // Prepare message for receiver (conversation shows sender's username)
+  const receiverData = JSON.stringify({
+    username: senderUsername,
+    type: "broadcast",
+    action: "newMessages",
+    conversation: senderUsername,
+    data: messageContent
+  });
+
+  console.log("receiver data ",receiverData );
+  // Find and send to receiver
+  for (const client of clients) {
+    const authClient = client as AuthenticatedWebSocket;
+    if (authClient.username === receiverUsername && client.readyState === WebSocket.OPEN) {
+      client.send(receiverData);
+    }
+  }
+};
