@@ -1,14 +1,18 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
-import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account_From_User_Table, test_data_authenticity , find_userId_by_username , get_all_users} from "../models/User.ts";
+import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account_From_User_Table, test_data_authenticity , find_userId_by_username } from "../models/User.ts";
 import { delete_User_From_ChatParticipant } from "../models/ChatParticipant.ts"
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
-import { get_All_chats } from "../models/Chat.ts";
 import { _getNonFriendUsers } from "../models/RequestFriendship.ts";
+import "jsr:@std/dotenv/load"; 
 
 // JWT Secret
-const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
+const secretStr = Deno.env.get("SECRET");
+if (!secretStr) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const secret = new TextEncoder().encode(secretStr);
 
 // Create JWT Token
 function createJWT(payload: JWTPayload): Promise<string> {
