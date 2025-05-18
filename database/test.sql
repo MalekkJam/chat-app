@@ -1,3 +1,1 @@
-UPDATE RequestFriendship
-SET status = 'pending'
-WHERE id = 4;
+delete from message where chat_id = 27
