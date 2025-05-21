@@ -72,7 +72,7 @@ User (user_id, username, email, password_hash)
 ## 🖥️ Installation and Setup
 
 ### Prerequisites:
-- **Vue.js** (for frontend)
+- **Node.js** (for frontend)
 - **Deno** (for backend)
 
 ### Backend Setup:
