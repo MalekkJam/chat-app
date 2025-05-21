@@ -1,5 +1,18 @@
 # 🗨️ Talksy
 
+**Release v1.0**  
+Talksy is a full-stack, real-time chat platform leveraging Vue.js (frontend), Deno (backend), and SQLite.  
+Key features include:
+- Real-time private/group messaging via WebSocket
+- User authentication (JWT, bcrypt)
+- Friend request system
+- Admin dashboard for user/chat management and analytics
+
+This release delivers a robust, modern messaging solution with secure authentication and comprehensive admin controls.  
+Ready for deployment and extensibility in academic or production environments.
+
+---
+
 ## 📌 Project Overview
 Chat App is a real-time messaging application where users can **sign up, log in, and send messages** to their friends. It supports both **private chats** and **group chats**. The app also includes features like **friend requests**, **user management**, and **admin controls**. The project is built using **Vue.js** for the frontend and **Deno** for the backend, with **SQLite** as the database.
 
@@ -52,3 +65,54 @@ User (user_id, username, email, password_hash)
 ├── ChatParticipant (chat_id, user_id, joined_at)
 │
 └── Message (message_id, chat_id, sender_id, content, timestamp)
+```
+
+---
+
+## 🖥️ Installation and Setup
+
+### Prerequisites:
+- **Vue.js** (for frontend)
+- **Deno** (for backend)
+
+### Backend Setup:
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies (if any):
+   ```bash
+   deno task dev
+   ```
+3. Start the backend server:
+   ```bash
+   deno run --allow-net --allow-read --allow-write server.ts
+   ```
+
+### Frontend Setup:
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📈 Future Enhancements
+
+- Typing indicators and read receipts
+- Push notifications
+- Dark mode and improved UI/UX
+- More granular admin controls
+
+---
+
+**Note:**  
+The codebase will be revised in the future and enhanced in terms of security and design.
