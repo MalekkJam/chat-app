@@ -110,7 +110,6 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
 
                     const messages = await getMessages(chat_id!) 
 
-                    console.log("the messages : ",messages);
                     // join the two tables to get a table containing usernames and messages
                     const fullMessages = await Promise.all(
                       messages.map(async (message) => {
