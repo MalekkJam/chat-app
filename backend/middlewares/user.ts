@@ -235,8 +235,6 @@ export const updateUserData = async (ctx : Context) => {
       return 
     }
 
-
-
     const {payload} = await jwtVerify(token,secret)
     const username = payload.username as string
 
@@ -285,8 +283,6 @@ export const updateUserData = async (ctx : Context) => {
 
       const hashed_password = await find_password_by_username(username) ;
 
-  
- 
       const compare_passwords = bcrypt.compareSync(current_password,hashed_password) ;
   
       if (!compare_passwords) {

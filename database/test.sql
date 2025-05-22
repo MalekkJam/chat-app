@@ -1,1 +1,1 @@
-delete from message where chat_id = 27
+UPDATE user SET username = 'test1' WHERE user_id = 9;

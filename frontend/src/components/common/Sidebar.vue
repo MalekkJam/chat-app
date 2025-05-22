@@ -78,6 +78,14 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
       async mounted() {
          this.fetchChats() 
          this.fetchFriends()
+         const socket = await initWebSocket() 
+
+         socket.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            if (data.type === "updateUsernames") {
+               this.fetchFriends()
+            }
+         }
       },
       methods : {
          fetchChats() {

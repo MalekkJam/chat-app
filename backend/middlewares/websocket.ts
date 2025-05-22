@@ -94,7 +94,6 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
      
               case "loadMessages": {
                   const {conversation , chatType} = JSON.parse(event.data.toString())
-                  console.log("here");
                   let chat_id
                   if (chatType == "private" ) {
                      // Searching for the chat id at first 
@@ -190,8 +189,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                 }))
                 break ; 
               }
-
-      
+                   
               default: {
                   console.warn(`Unknown action type: ${action}`);
                   socket.send(JSON.stringify({
@@ -202,7 +200,15 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
               }
 
           }
-      }
+       
+             
+        break ; 
+        }
+        case 'updateUsernames' : {
+              broadcastUpdateUsernames(clients)
+              break ; 
+         }
+      
     }   
 
     };
@@ -240,6 +246,8 @@ export const broadcastGroupMessage = (clients : Set<WebSocket>,username : string
     }
   }
 }
+
+
 
 // Add this function to your websocket.ts
 export const broadcastPrivateMessage = (
@@ -280,3 +288,15 @@ export const broadcastPrivateMessage = (
     }
   }
 };
+
+
+export function broadcastUpdateUsernames(clients: Set<WebSocket>) {
+  const data = JSON.stringify({
+    type: "updateUsernames"
+  });
+  for (const client of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  }
+}
