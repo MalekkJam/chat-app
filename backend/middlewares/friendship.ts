@@ -3,9 +3,14 @@ import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import {jwtVerify } from "npm:jose@5.9.6";  
 import { find_userId_by_username } from "../models/User.ts";
 import { getMyFriends } from "../models/Frienship.ts";
+import "jsr:@std/dotenv/load"; 
 
-const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
-
+// JWT Secret
+const secretStr = Deno.env.get("SECRET");
+if (!secretStr) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const secret = new TextEncoder().encode(secretStr);
 
 export const fetchMyFriends = async(ctx : Context) => {
      try {

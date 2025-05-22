@@ -14,7 +14,11 @@
 
       <!-- Main content on the right -->
       <section class="flox-grow pt-14 pl-64 w-full rounded-tl-lg bg-white shadow">
-        <router-view>
+        <router-view
+        @new-chat-added = updateTable() 
+        @chat-deleted = updateTable() 
+        @user-deleted = updateTable()
+        >
         </router-view>
       </section>
     </div>
@@ -52,6 +56,7 @@ export default {
   methods : {
     updateTable() {
       this.$refs.sideBar.fetchChats()
+      this.$refs.sideBar.fetchFriends() 
     }
   }
 }

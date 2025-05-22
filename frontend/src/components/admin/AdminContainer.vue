@@ -1,18 +1,28 @@
 <template>
     <AdminAnalytics ref="analytics"></AdminAnalytics>
-    <AdminUserTable></AdminUserTable>
-    <AdminChatContainer @newChatAdded="updateAnalytics()"></AdminChatContainer>
+    <AdminUserTable 
+    @user-deleted = deleteUser()
+    ></AdminUserTable>
+    <AdminChatContainer @newChatAdded="updateAnalytics()"
+     @chat-deleted = deleteChat()>
+    </AdminChatContainer>
 </template>
 
 <script>
-import AdminAnalytics from './AdminAnalytics.vue';
-import AdminChatContainer from './AdminChatContainer.vue';
-import AdminUserTable from './AdminUserTable.vue';
 
 export default {
     methods : {
         updateAnalytics() {
             this.$refs.analytics.fetchData() ; 
+            this.$emit('new-chat-added') ; 
+        }, 
+        deleteChat() {
+            this.$refs.analytics.fetchData() ; 
+            this.$emit("chat-deleted")
+        }, 
+        deleteUser() {
+            this.$refs.analytics.fetchData() ;
+            this.$emit('user-deleted')
         }
     }
 }

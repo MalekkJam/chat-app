@@ -101,6 +101,7 @@
   
 <script>
 
+import { initWebSocket, sendMessage  } from '@/services/websocket.service';
 
 export default {
   data() {
@@ -155,6 +156,7 @@ export default {
                     this.showError1 = false 
                 this.showSuccess1 = true 
                 this.successMessage = data.message;
+                this.sendRefreshRequest() 
             }
             else {
                 if(this.showSuccess1) {
@@ -171,6 +173,14 @@ export default {
             })
            
     }, 
+    async sendRefreshRequest() {
+      const socket = await initWebSocket() 
+      const request = {
+        type : "updateUsernames", 
+      }
+      console.log("baathneh");
+      sendMessage(JSON.stringify(request))
+    } , 
     updatePassword() {
         fetch(this.url+"/updateUserData", {
             method : "PUT",
