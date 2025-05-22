@@ -17,7 +17,11 @@
         </div>
       </div>
     </div>
-    <AdminContainer v-else></AdminContainer>
+    <AdminContainer v-else
+    @new-chat-added = newChatAdded() 
+    @chat-deleted = deleteChat()
+    @user-deleted = deleteUser()
+    ></AdminContainer>
   </div>
 </template>
   
@@ -58,6 +62,15 @@
             this.isAdmin = true ; 
           }
         })
+      }, 
+      newChatAdded() {
+        this.$emit('new-chat-added')
+      }, 
+      deleteChat() {
+        this.$emit("chat-deleted")
+      }, 
+      deleteUser() {
+        this.$emit("user-deleted")
       }
     }
   }

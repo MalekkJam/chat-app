@@ -78,6 +78,14 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
       async mounted() {
          this.fetchChats() 
          this.fetchFriends()
+         const socket = await initWebSocket() 
+
+         socket.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            if (data.type === "updateUsernames") {
+               this.fetchFriends()
+            }
+         }
       },
       methods : {
          fetchChats() {
@@ -134,6 +142,7 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                
                socket.onmessage = (event) => {
                   const response = JSON.parse(event.data) ; 
+                  // Sending the request updating the table in the popup
                   if (response.type == "response" && 
                      response.action == "sendRequest" && 
                      response.status == 200
@@ -145,6 +154,7 @@ import { initWebSocket, sendMessage  } from '@/services/websocket.service';
                      response.status == 200
                   ){
                      this.fetchFriendRequests()
+                     this.fetchFriends()
                   }
                   
                }             

@@ -7,6 +7,7 @@ import {getKpis, getAllUsers, getAllChats , getChatParticipants , kickUserFromCh
 import { fetchFriendshipRequests } from "./middlewares/requestFriendship.ts";
 import {fetchMyFriends} from "./middlewares/friendship.ts"
 
+
 const router = new Router();
 const app = new Application();
 const port = Deno.args[0] ? Number(Deno.args[0]) : 3000;

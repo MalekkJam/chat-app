@@ -3,9 +3,14 @@ import { jwtVerify } from "npm:jose@5.9.6/jwt/verify";
 import { get_Nb_Conversations , get_All_chats , get_chat_participants , get_chatID_by_chatName, add_chat} from "../models/Chat.ts";
 import { get_Nb_Users, get_all_users, get_Nb_new_users , find_userId_by_username} from "../models/User.ts";
 import {kick_user_from_chat , get_users_not_in_chat, add_user_to_chat, delete_chat_with_participants , add_admin_to_new_chat} from "../models/ChatParticipant.ts"
+import "jsr:@std/dotenv/load"; 
 
-const secret = new TextEncoder().encode("ed5a207a8e88013ab968eaf43d0017507508e5efa2129248b713a223eaf66864");
-
+// JWT Secret
+const secretStr = Deno.env.get("SECRET");
+if (!secretStr) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const secret = new TextEncoder().encode(secretStr);
 export const getKpis = async (ctx : Context) => {
     try {const token = await ctx.cookies.get("auth_token") ; 
 
