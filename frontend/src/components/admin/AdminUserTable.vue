@@ -16,9 +16,6 @@
                         Email
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Activity
-                    </th>
-                    <th scope="col" class="px-6 py-3">
                         Joined at
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -32,12 +29,7 @@
                         {{ user.username }}
                     </th>
                     <td class="px-6 py-4">
-                        {{ user.email }}
-                    </td>
-                    <td class="px-6 py-4">
-                      <span :class="`px-2 py-1 rounded-full text-xs font-semibold ${user.active ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'}`">
-                            {{ user.active ? 'Active' : 'Inactive' }}
-                          </span>
+                        {{ user.email }}  
                     </td>
                     <td class="px-6 py-4">
                         {{ user.joined_at }}

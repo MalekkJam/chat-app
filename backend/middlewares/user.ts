@@ -1,11 +1,12 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 import { User, registerUser , find_username_by_email, find_user_by_email, find_info_by_username, update_User_Data, find_password_by_username, delete_Account_From_User_Table, test_data_authenticity , find_userId_by_username } from "../models/User.ts";
-import { delete_User_From_ChatParticipant } from "../models/ChatParticipant.ts"
+import { delete_User_From_ChatParticipant , delete_ChatParticipant_By_ChatId } from "../models/ChatParticipant.ts"
 import { Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { JWTPayload, SignJWT, jwtVerify } from "npm:jose@5.9.6";
 import { AuthenticatedWebSocket } from "../models/Websocket.ts";
 import { _getNonFriendUsers } from "../models/RequestFriendship.ts";
 import "jsr:@std/dotenv/load"; 
+import { get_private_convos , delete_Conversation } from "../models/Chat.ts";
 
 // JWT Secret
 const secretStr = Deno.env.get("SECRET");
@@ -321,14 +322,25 @@ export const deleteAccount = async (ctx : Context, clients :Set<WebSocket>) => {
     if (username === "admin") { // The admin will himself delete the user 
       const { username } = await ctx.request.body().value;
       const user_id = await find_userId_by_username(username) 
+      const user_private_convos = await get_private_convos(user_id)
       await delete_User_From_ChatParticipant(user_id) ; 
-      await delete_Account_From_User_Table(username) ; 
+      await delete_Account_From_User_Table(username) ;
+      for (const item of user_private_convos) {
+        await delete_Conversation(item)
+        await delete_ChatParticipant_By_ChatId(item)
+      }
+      
     }else { // the user deletes his account from the settings page 
       const user_id = await find_userId_by_username(username) 
+      const user_private_convos = await get_private_convos(user_id)
+      console.log("user private convos ",user_private_convos);
       await delete_User_From_ChatParticipant(user_id) ; 
       await delete_Account_From_User_Table(username) ; 
-
-          // Close the WebSocket connection for the user
+      for (const item of user_private_convos) {
+        console.log("the conversations to delete are : ",item);
+        await delete_Conversation(item)
+      }      
+      // Close the WebSocket connection for the user
     for (const client of clients) {
       const authSocket = client as AuthenticatedWebSocket;
       if (authSocket.username === username) {
