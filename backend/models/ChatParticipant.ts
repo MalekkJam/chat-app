@@ -77,3 +77,14 @@ export const add_admin_to_new_chat = async (chat_id : string) => {
         throw error 
     }
 }
+
+export const delete_ChatParticipant_By_ChatId = async (chat_id: string) => {
+    const query = "DELETE FROM ChatParticipant WHERE chat_id = ?";
+    try {
+        const result = await db.prepare(query).all(chat_id);
+        return result;
+    } catch (error) {
+        console.error("Error deleting chat participants for chat_id:", chat_id);
+        throw error;
+    }
+};

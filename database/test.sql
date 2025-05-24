@@ -1,1 +1,1 @@
-UPDATE user SET username = 'test1' WHERE user_id = 9;
+delete from chat

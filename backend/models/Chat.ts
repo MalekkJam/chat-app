@@ -107,3 +107,20 @@ export const get_private_chatid = async (my_id : string ,friend_id : string) => 
         throw error;
     }
 } 
+
+export const get_private_convos = async (user_id: string) => {
+    console.log("user id is ",user_id);
+    const query = `
+        SELECT c.chat_id
+        FROM Chat c
+        JOIN ChatParticipant cp ON c.chat_id = cp.chat_id
+        WHERE c.chat_type = 'private'
+          AND cp.user_id = ?
+    `;
+    try {
+        const result = await db.prepare(query).all(user_id) as { chat_id: string }[];
+        return result.map(row => row.chat_id);
+    } catch (error) {
+        throw error;
+    }
+};
