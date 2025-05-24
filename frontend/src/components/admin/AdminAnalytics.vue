@@ -7,24 +7,35 @@
 
 <div id="main" class="main-content flex-1 bg-gray-100 mt-12 md:mt-2 pb-24 md:pb-5">
 
-<div class="bg-gray-800 pt-3">
-    <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
-        <h1 class="font-bold pl-2">Analytics</h1>
+<div class="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 pt-6">
+    <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 p-6 shadow-2xl text-2xl text-white border-t-4 border-blue-400">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <i class="fas fa-chart-line text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-3xl tracking-tight">Analytics Dashboard</h1>
+                <p class="text-blue-200 text-sm mt-1 opacity-90">Real-time insights and statistics</p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="flex flex-wrap">
     <div class="w-full md:w-1/2 xl:w-1/3 p-6">
         <!--Metric Card-->
-        <div class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-br from-green-400 to-emerald-500 border-b-4 border-green-600 rounded-2xl shadow-2xl p-6 hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] group">
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
-                    <div class="rounded-full p-5 bg-green-600"><i class="fa fa-wallet fa-2x fa-inverse"></i></div>
+                <div class="flex-shrink pr-6">
+                    <div class="rounded-2xl p-6 bg-green-600 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <i class="fa fa-comments fa-3x fa-inverse"></i>
+                    </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h2 class="font-bold uppercase text-gray-600">Number of conversations</h2>
-                    <p class="font-bold text-3xl text-black flex items-center justify-end md:justify-center">
+                    <h2 class="font-bold uppercase text-white text-sm tracking-wider mb-2">Conversations</h2>
+                    <p class="font-bold text-4xl text-white flex items-center justify-end md:justify-center">
                         {{ nbConversations ?? 'Loading...' }}
+                        <span class="text-lg ml-2 opacity-80">💬</span>
                     </p>
                 </div>
             </div>
@@ -33,14 +44,19 @@
     </div>
     <div class="w-full md:w-1/2 xl:w-1/3 p-6">
         <!--Metric Card-->
-        <div class="bg-gradient-to-b from-pink-200 to-pink-100 border-b-4 border-pink-500 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-br from-pink-400 to-rose-500 border-b-4 border-pink-600 rounded-2xl shadow-2xl p-6 hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] group">
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
-                    <div class="rounded-full p-5 bg-pink-600"><i class="fas fa-users fa-2x fa-inverse"></i></div>
+                <div class="flex-shrink pr-6">
+                    <div class="rounded-2xl p-6 bg-pink-600 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <i class="fas fa-users fa-3x fa-inverse"></i>
+                    </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h2 class="font-bold uppercase text-gray-600">Total Users</h2>
-                    <p class="font-bold text-3xl text-black">{{ nbTotalUsers ?? 'Loading...' }} </p>
+                    <h2 class="font-bold uppercase text-white text-sm tracking-wider mb-2">Total Users</h2>
+                    <p class="font-bold text-4xl text-white flex items-center justify-end md:justify-center">
+                        {{ nbTotalUsers ?? 'Loading...' }}
+                        <span class="text-lg ml-2 opacity-80">👤</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -48,14 +64,19 @@
     </div>
     <div class="w-full md:w-1/2 xl:w-1/3 p-6">
         <!--Metric Card-->
-        <div class="bg-gradient-to-b from-yellow-200 to-yellow-100 border-b-4 border-yellow-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-br from-yellow-400 to-amber-500 border-b-4 border-yellow-600 rounded-2xl shadow-2xl p-6 hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] group">
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
-                    <div class="rounded-full p-5 bg-yellow-600"><i class="fas fa-user-plus fa-2x fa-inverse"></i></div>
+                <div class="flex-shrink pr-6">
+                    <div class="rounded-2xl p-6 bg-yellow-600 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                        <i class="fas fa-user-plus fa-3x fa-inverse"></i>
+                    </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h2 class="font-bold uppercase text-gray-600">New Users</h2>
-                    <p class="font-bold text-3xl text-black">{{ nbNewUsers ?? 'Loading...' }}</p>
+                    <h2 class="font-bold uppercase text-white text-sm tracking-wider mb-2">New Users</h2>
+                    <p class="font-bold text-4xl text-white flex items-center justify-end md:justify-center">
+                        {{ nbNewUsers ?? 'Loading...' }}
+                        <span class="text-lg ml-2 opacity-80">🆕</span>
+                    </p>
                 </div>
             </div>
         </div>

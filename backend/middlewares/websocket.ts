@@ -97,6 +97,7 @@ export const connectionUpgrade = async (clients: Set<WebSocket>, ctx: Context) =
                   let chat_id
                   if (chatType == "private" ) {
                      // Searching for the chat id at first 
+                    
                     const my_id =  await find_userId_by_username(username) 
                     const friend_id = await find_userId_by_username(conversation) 
 
